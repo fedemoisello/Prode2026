@@ -1,0 +1,61 @@
+[
+  {"id": "MEX", "nombre": "México",             "grupo": "A", "flag": "🇲🇽", "seed": 1},
+  {"id": "RSA", "nombre": "Sudáfrica",           "grupo": "A", "flag": "🇿🇦", "seed": 2},
+  {"id": "KOR", "nombre": "Corea del Sur",       "grupo": "A", "flag": "🇰🇷", "seed": 3},
+  {"id": "CZE", "nombre": "República Checa",     "grupo": "A", "flag": "🇨🇿", "seed": 4},
+
+  {"id": "CAN", "nombre": "Canadá",              "grupo": "B", "flag": "🇨🇦", "seed": 1},
+  {"id": "BIH", "nombre": "Bosnia",              "grupo": "B", "flag": "🇧🇦", "seed": 2},
+  {"id": "QAT", "nombre": "Qatar",               "grupo": "B", "flag": "🇶🇦", "seed": 3},
+  {"id": "SUI", "nombre": "Suiza",               "grupo": "B", "flag": "🇨🇭", "seed": 4},
+
+  {"id": "BRA", "nombre": "Brasil",              "grupo": "C", "flag": "🇧🇷", "seed": 1},
+  {"id": "MAR", "nombre": "Marruecos",           "grupo": "C", "flag": "🇲🇦", "seed": 2},
+  {"id": "HAI", "nombre": "Haití",               "grupo": "C", "flag": "🇭🇹", "seed": 3},
+  {"id": "SCO", "nombre": "Escocia",             "grupo": "C", "flag": "🏴󠁧󠁢󠁳󠁣󠁴󠁿", "seed": 4},
+
+  {"id": "USA", "nombre": "Estados Unidos",      "grupo": "D", "flag": "🇺🇸", "seed": 1},
+  {"id": "PAR", "nombre": "Paraguay",            "grupo": "D", "flag": "🇵🇾", "seed": 2},
+  {"id": "AUS", "nombre": "Australia",           "grupo": "D", "flag": "🇦🇺", "seed": 3},
+  {"id": "TUR", "nombre": "Turquía",             "grupo": "D", "flag": "🇹🇷", "seed": 4},
+
+  {"id": "GER", "nombre": "Alemania",            "grupo": "E", "flag": "🇩🇪", "seed": 1},
+  {"id": "CUW", "nombre": "Curazao",             "grupo": "E", "flag": "🇨🇼", "seed": 2},
+  {"id": "CIV", "nombre": "Costa de Marfil",     "grupo": "E", "flag": "🇨🇮", "seed": 3},
+  {"id": "ECU", "nombre": "Ecuador",             "grupo": "E", "flag": "🇪🇨", "seed": 4},
+
+  {"id": "NED", "nombre": "Países Bajos",        "grupo": "F", "flag": "🇳🇱", "seed": 1},
+  {"id": "JPN", "nombre": "Japón",               "grupo": "F", "flag": "🇯🇵", "seed": 2},
+  {"id": "SWE", "nombre": "Suecia",              "grupo": "F", "flag": "🇸🇪", "seed": 3},
+  {"id": "TUN", "nombre": "Túnez",               "grupo": "F", "flag": "🇹🇳", "seed": 4},
+
+  {"id": "BEL", "nombre": "Bélgica",             "grupo": "G", "flag": "🇧🇪", "seed": 1},
+  {"id": "EGY", "nombre": "Egipto",              "grupo": "G", "flag": "🇪🇬", "seed": 2},
+  {"id": "IRN", "nombre": "Irán",                "grupo": "G", "flag": "🇮🇷", "seed": 3},
+  {"id": "NZL", "nombre": "Nueva Zelanda",       "grupo": "G", "flag": "🇳🇿", "seed": 4},
+
+  {"id": "ESP", "nombre": "España",              "grupo": "H", "flag": "🇪🇸", "seed": 1},
+  {"id": "CPV", "nombre": "Cabo Verde",          "grupo": "H", "flag": "🇨🇻", "seed": 2},
+  {"id": "KSA", "nombre": "Arabia Saudita",      "grupo": "H", "flag": "🇸🇦", "seed": 3},
+  {"id": "URU", "nombre": "Uruguay",             "grupo": "H", "flag": "🇺🇾", "seed": 4},
+
+  {"id": "FRA", "nombre": "Francia",             "grupo": "I", "flag": "🇫🇷", "seed": 1},
+  {"id": "SEN", "nombre": "Senegal",             "grupo": "I", "flag": "🇸🇳", "seed": 2},
+  {"id": "IRQ", "nombre": "Irak",                "grupo": "I", "flag": "🇮🇶", "seed": 3},
+  {"id": "NOR", "nombre": "Noruega",             "grupo": "I", "flag": "🇳🇴", "seed": 4},
+
+  {"id": "ARG", "nombre": "Argentina",           "grupo": "J", "flag": "🇦🇷", "seed": 1},
+  {"id": "ALG", "nombre": "Argelia",             "grupo": "J", "flag": "🇩🇿", "seed": 2},
+  {"id": "AUT", "nombre": "Austria",             "grupo": "J", "flag": "🇦🇹", "seed": 3},
+  {"id": "JOR", "nombre": "Jordania",            "grupo": "J", "flag": "🇯🇴", "seed": 4},
+
+  {"id": "POR", "nombre": "Portugal",            "grupo": "K", "flag": "🇵🇹", "seed": 1},
+  {"id": "COD", "nombre": "Rep. Dem. del Congo", "grupo": "K", "flag": "🇨🇩", "seed": 2},
+  {"id": "UZB", "nombre": "Uzbekistán",          "grupo": "K", "flag": "🇺🇿", "seed": 3},
+  {"id": "COL", "nombre": "Colombia",            "grupo": "K", "flag": "🇨🇴", "seed": 4},
+
+  {"id": "ENG", "nombre": "Inglaterra",          "grupo": "L", "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿", "seed": 1},
+  {"id": "CRO", "nombre": "Croacia",             "grupo": "L", "flag": "🇭🇷", "seed": 2},
+  {"id": "GHA", "nombre": "Ghana",               "grupo": "L", "flag": "🇬🇭", "seed": 3},
+  {"id": "PAN", "nombre": "Panamá",              "grupo": "L", "flag": "🇵🇦", "seed": 4}
+]
