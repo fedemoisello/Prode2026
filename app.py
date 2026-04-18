@@ -1,4 +1,5 @@
 import streamlit as st
+from lib.auth import get_session
 
 st.set_page_config(
     page_title="Prode Mundial 2026",
@@ -7,19 +8,20 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-from lib.auth import get_session
-from lib.deadline import is_locked, tiempo_restante
-
-st.title("⚽ Prode Mundial 2026")
-
 u = get_session()
 
-if not u:
-    st.info("Usá el menú lateral → **Inicio** para ingresar.")
-else:
-    locked = is_locked()
-    st.success(f"Bienvenido, **{u['nombre']}** {'🔒 Prode cerrado' if locked else f'⏳ Cierra en: {tiempo_restante()}'}")
-    if locked:
-        st.info("El torneo ya comenzó. Podés ver tu prode y el ranking.")
-    else:
-        st.info("Completá tu prode antes del cierre. Usá el menú lateral.")
+with st.sidebar:
+    st.toggle("🇦🇷 Hora Buenos Aires (GMT-3)", key="tz_bsas")
+
+pages = [
+    st.Page("pages/1_Inicio.py",       title="Inicio",         icon="🏠", default=True),
+    st.Page("pages/2_Fase_Grupos.py",  title="Fase de Grupos", icon="⚽"),
+    st.Page("pages/3_Eliminatorias.py",title="Eliminatorias",  icon="🎯"),
+    st.Page("pages/4_Mi_Prode.py",     title="Mi Prode",       icon="📊"),
+    st.Page("pages/5_Ranking.py",      title="Ranking",        icon="🏆"),
+]
+if u and u.get("is_admin"):
+    pages.append(st.Page("pages/6_Admin.py", title="Admin", icon="⚙️"))
+
+pg = st.navigation(pages)
+pg.run()

@@ -5,16 +5,20 @@ from lib.db import query, upsert
 from lib.grupos import calcular_tabla, clasificados
 from lib.constants import GRUPOS, PARTIDOS_POR_GRUPO, EQUIPOS_POR_GRUPO
 from lib.flags import flag_img, team_label
+from datetime import datetime, timedelta
 import json, pathlib
 
-st.set_page_config(page_title="Fase de Grupos · Prode 2026", page_icon="⚽", layout="wide")
 st.title("⚽ Fase de Grupos")
 
 u = require_login()
 locked = is_locked()
+tz_bsas = st.session_state.get("tz_bsas", False)
 
 if locked:
     st.warning("🔒 El prode está cerrado. Solo podés ver tus picks.")
+
+if "grupos_guardados" not in st.session_state:
+    st.session_state["grupos_guardados"] = set()
 
 # Cargar fixture y picks existentes
 fixture_raw = json.loads(pathlib.Path("data/fixture.json").read_text(encoding="utf-8"))
@@ -29,7 +33,14 @@ for grupo in GRUPOS:
     partido_ids = PARTIDOS_POR_GRUPO[grupo]
     equipos = EQUIPOS_POR_GRUPO[grupo]
 
-    with st.expander(f"Grupo {grupo}  ·  {' / '.join(teams[e]['nombre'] for e in equipos)}", expanded=False):
+    group_complete = all(pid in picks_existentes for pid in partido_ids)
+    title_icon = " ✅" if group_complete else ""
+    expander_label = f"Grupo {grupo}{title_icon}  ·  {' / '.join(teams[e]['nombre'] for e in equipos)}"
+
+    with st.expander(expander_label, expanded=False):
+
+        if grupo in st.session_state["grupos_guardados"]:
+            st.success(f"✅ Grupo {grupo} guardado correctamente.")
 
         # Tabla en vivo a partir de picks actuales en session_state
         partidos_para_tabla = []
@@ -63,9 +74,12 @@ for grupo in GRUPOS:
                 fix = fixture[pid]
                 loc = teams[fix["local"]]
                 vis = teams[fix["visitante"]]
-                from datetime import datetime, timezone
                 dt = datetime.fromisoformat(fix["fecha"].replace("Z", "+00:00"))
-                fecha_str = dt.strftime("%d/%m %H:%M") + " UTC"
+                if tz_bsas:
+                    dt_display = dt - timedelta(hours=3)
+                    fecha_str = dt_display.strftime("%d/%m %H:%M") + " (BA)"
+                else:
+                    fecha_str = dt.strftime("%d/%m %H:%M") + " UTC"
 
                 prev = picks_existentes.get(pid, {})
                 default_l = prev.get("goles_local", 0)
@@ -98,7 +112,7 @@ for grupo in GRUPOS:
                         for pid, v in nuevos_picks.items()
                     ]
                     upsert("picks_grupos", rows)
-                    st.success(f"Grupo {grupo} guardado.")
+                    st.session_state["grupos_guardados"].add(grupo)
                     st.rerun()
                 except PermissionError as e:
                     st.error(str(e))

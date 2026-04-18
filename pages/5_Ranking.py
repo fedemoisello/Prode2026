@@ -4,7 +4,6 @@ from lib.db import query
 from lib.scoring import calcular_puntos_usuario
 from lib.deadline import is_locked
 
-st.set_page_config(page_title="Ranking · Prode 2026", page_icon="🏆")
 st.title("🏆 Ranking")
 
 require_login()

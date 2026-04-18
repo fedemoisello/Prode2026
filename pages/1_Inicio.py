@@ -3,7 +3,6 @@ from lib.auth import login, set_session, get_session, get_all_users
 from lib.deadline import is_locked, tiempo_restante, get_deadline
 from lib.db import query
 
-st.set_page_config(page_title="Inicio · Prode 2026", page_icon="🏠")
 st.title("🏠 Inicio")
 
 u = get_session()

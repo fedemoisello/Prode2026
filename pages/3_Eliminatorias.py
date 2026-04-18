@@ -8,7 +8,6 @@ from lib.terceros import mejores_terceros, asignar_terceros
 from lib.bracket import build_16vos
 from lib.constants import GRUPOS, PARTIDOS_POR_GRUPO, EQUIPOS_POR_GRUPO, PUNTOS_GANADOR
 
-st.set_page_config(page_title="Eliminatorias · Prode 2026", page_icon="🎯", layout="wide")
 st.title("🎯 Eliminatorias")
 
 u = require_login()

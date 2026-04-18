@@ -3,7 +3,6 @@ import json, pathlib
 from lib.auth import require_admin
 from lib.db import query, upsert, update
 
-st.set_page_config(page_title="Admin · Prode 2026", page_icon="⚙️")
 st.title("⚙️ Admin")
 
 u = require_admin()

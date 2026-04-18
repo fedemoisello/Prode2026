@@ -6,7 +6,6 @@ from lib.grupos import calcular_tabla
 from lib.constants import GRUPOS, PARTIDOS_POR_GRUPO, EQUIPOS_POR_GRUPO
 from lib.flags import flag_img
 
-st.set_page_config(page_title="Mi Prode · Prode 2026", page_icon="📊", layout="wide")
 st.title("📊 Mi Prode")
 
 u = require_login()
