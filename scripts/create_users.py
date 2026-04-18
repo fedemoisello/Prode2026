@@ -18,11 +18,9 @@ except ImportError:
 
 # ── Editá esta lista ───────────────────────────────────────────────────────────
 USUARIOS = [
-    "Fede",
-    "Gasti",
-    "Bidi",
-    "Sebi",
-    # ... agregar hasta 20
+    "Bidi", "Matuno", "Pela", "Sebi", "Fla", "Bele", "Bosti",
+    "Buga", "Conri", "Chapa", "Dalmi", "Gasti", "Juanpa",
+    "Mike", "Wake", "Pola", "Fede",
 ]
 ADMIN = "Fede"
 # ─────────────────────────────────────────────────────────────────────────────

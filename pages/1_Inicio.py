@@ -35,22 +35,22 @@ if u:
 
 else:
     st.subheader("Ingresar")
-    users = get_all_users()
-    nombres = [u["nombre"] for u in users]
 
     with st.form("login_form"):
-        nombre = st.selectbox("Nombre", nombres)
+        nombre = st.text_input("Nombre", placeholder="Tu nombre")
         pin = st.text_input("PIN", type="password", max_chars=4, placeholder="4 dígitos")
         submitted = st.form_submit_button("Ingresar")
 
     if submitted:
-        if not pin or not pin.isdigit() or len(pin) != 4:
+        if not nombre.strip():
+            st.error("Escribí tu nombre.")
+        elif not pin or not pin.isdigit() or len(pin) != 4:
             st.error("El PIN debe tener exactamente 4 dígitos.")
         else:
-            user = login(nombre, pin)
+            user = login(nombre.strip(), pin)
             if user:
                 set_session(user)
                 st.success(f"Bienvenido, {user['nombre']}!")
                 st.rerun()
             else:
-                st.error("PIN incorrecto.")
+                st.error("Nombre o PIN incorrecto.")

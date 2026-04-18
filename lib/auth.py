@@ -1,7 +1,7 @@
 import bcrypt
 import streamlit as st
 from datetime import datetime, timezone, timedelta
-from lib.db import query, insert, update
+from lib.db import query, insert, update, get_client
 
 
 SESSION_TTL_HOURS = 24
@@ -20,7 +20,9 @@ def get_all_users() -> list[dict]:
 
 
 def login(nombre: str, pin: str) -> dict | None:
-    rows = query("users", {"nombre": nombre})
+    from supabase import create_client
+    sb = get_client()
+    rows = sb.table("users").select("*").ilike("nombre", nombre).execute().data
     if not rows:
         return None
     user = rows[0]
