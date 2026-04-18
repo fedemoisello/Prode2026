@@ -93,3 +93,15 @@ CREATE POLICY "write_picks_elim" ON picks_eliminatorias FOR INSERT WITH CHECK (
 CREATE POLICY "write_picks_elim_upd" ON picks_eliminatorias FOR UPDATE USING (
     NOW() < (SELECT value::TIMESTAMPTZ FROM config WHERE key = 'deadline_utc')
 );
+
+-- ============================================================
+-- Permisos para el rol anon (requerido porque usamos PIN propio, no Supabase Auth)
+-- ============================================================
+GRANT SELECT                    ON users                TO anon;
+GRANT SELECT                    ON teams                TO anon;
+GRANT SELECT                    ON fixture              TO anon;
+GRANT SELECT                    ON config               TO anon;
+GRANT SELECT, INSERT, UPDATE    ON picks_grupos         TO anon;
+GRANT SELECT, INSERT, UPDATE    ON picks_eliminatorias  TO anon;
+GRANT SELECT, INSERT, UPDATE    ON results              TO anon;
+GRANT USAGE                     ON SEQUENCE users_id_seq TO anon;
