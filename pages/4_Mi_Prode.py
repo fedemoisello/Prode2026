@@ -4,6 +4,7 @@ from lib.auth import require_login
 from lib.db import query
 from lib.grupos import calcular_tabla
 from lib.constants import GRUPOS, PARTIDOS_POR_GRUPO, EQUIPOS_POR_GRUPO
+from lib.flags import flag_img
 
 st.set_page_config(page_title="Mi Prode · Prode 2026", page_icon="📊", layout="wide")
 st.title("📊 Mi Prode")
@@ -27,13 +28,13 @@ for grupo in GRUPOS:
         for pid in partido_ids:
             fix = fixture[pid]
             pick = picks_g.get(pid, {})
-            loc = teams[fix["equipo_local"]]
-            vis = teams[fix["equipo_visitante"]]
+            loc = teams[fix["local"]]
+            vis = teams[fix["visitante"]]
             gl = pick.get("goles_local", "—")
             gv = pick.get("goles_visitante", "—")
-            st.markdown(f"{loc['flag']} **{loc['nombre']}** {gl} - {gv} **{vis['nombre']}** {vis['flag']}")
+            st.markdown(f"{flag_img(loc)}**{loc['nombre']}** {gl} - {gv} **{vis['nombre']}** {flag_img(vis)}", unsafe_allow_html=True)
             partidos.append({
-                "local": fix["equipo_local"], "visitante": fix["equipo_visitante"],
+                "local": fix["local"], "visitante": fix["visitante"],
                 "goles_local": pick.get("goles_local"), "goles_visitante": pick.get("goles_visitante"),
             })
         tabla = calcular_tabla(equipos, partidos)
@@ -41,7 +42,7 @@ for grupo in GRUPOS:
         for i, row in enumerate(tabla):
             eq = teams[row.equipo]
             clasif = "🟢" if i < 2 else ("🟡" if i == 2 else "🔴")
-            st.caption(f"{clasif} {eq['flag']} {eq['nombre']} — {row.pts}pts ({row.gf}-{row.gc})")
+            st.markdown(f"<small>{clasif} {flag_img(eq)}{eq['nombre']} — {row.pts}pts ({row.gf}-{row.gc})</small>", unsafe_allow_html=True)
 
 st.subheader("Eliminatorias")
 fases = ["16vos", "8vos", "cuartos", "semi", "tercer_puesto", "final"]

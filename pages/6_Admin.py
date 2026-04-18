@@ -34,8 +34,8 @@ with tab_results:
         res = results_db.get(pid_sel, {})
 
         if fix["fase"] == "grupos":
-            loc = teams.get(fix.get("equipo_local"), {})
-            vis = teams.get(fix.get("equipo_visitante"), {})
+            loc = teams.get(fix.get("local"), {})
+            vis = teams.get(fix.get("visitante"), {})
             c1, c2, c3 = st.columns(3)
             gl = c1.number_input(f"Goles {loc.get('nombre','Local')}", 0, 20,
                                  res.get("goles_local", 0), key="admin_gl")

@@ -35,7 +35,7 @@ for grupo in GRUPOS:
         fix = fixture[pid]
         pick = picks_g.get(pid, {})
         partidos.append({
-            "local": fix["equipo_local"], "visitante": fix["equipo_visitante"],
+            "local": fix["local"], "visitante": fix["visitante"],
             "goles_local": pick.get("goles_local"), "goles_visitante": pick.get("goles_visitante"),
         })
     tabla = calcular_tabla(equipos, partidos)
