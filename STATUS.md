@@ -11,7 +11,7 @@
 | Componente | Estado | Detalle |
 |-----------|--------|---------|
 | GitHub repo | ✅ Live | github.com/fedemoisello/Prode2026 (público) |
-| Supabase DB | ✅ Live | htbouphuhouiivuwhocq.supabase.co |
+| Supabase DB | ✅ Live | Ver secrets.toml (no commitear URL) |
 | Streamlit Cloud | ✅ Live | Conectado a GitHub, redeploy automático |
 | Tablas DB | ✅ Creadas | users, teams, fixture, picks_grupos, picks_eliminatorias, results, config |
 | RLS Supabase | ✅ Activo | Bloquea escritura post-deadline en picks |
