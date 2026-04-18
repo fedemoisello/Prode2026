@@ -26,22 +26,21 @@ def asignar_terceros(mejores: list[dict]) -> dict[int, str]:
     grupos_disponibles = {t["grupo"] for t in mejores}
     equipo_por_grupo = {t["grupo"]: t["equipo"] for t in mejores}
 
-    asignacion = {}
+    asignacion: dict[int, str] = {}
+    grupos_usados: set[str] = set()
 
-    def backtrack(idx):
+    def backtrack(idx: int) -> bool:
         if idx == len(slots):
             return True
         slot = slots[idx]
-        validos = TERCEROS_VALIDOS[slot] & grupos_disponibles - set(asignacion.values())
-        # grupos_disponibles - ya usados en asignacion
-        usados = {g for g, _ in [(g, e) for g, e in equipo_por_grupo.items()
-                                  if e in asignacion.values()]}
-        candidatos = TERCEROS_VALIDOS[slot] & (grupos_disponibles - usados)
+        candidatos = TERCEROS_VALIDOS[slot] & (grupos_disponibles - grupos_usados)
         for grupo in sorted(candidatos):
             asignacion[slot] = equipo_por_grupo[grupo]
+            grupos_usados.add(grupo)
             if backtrack(idx + 1):
                 return True
             del asignacion[slot]
+            grupos_usados.discard(grupo)
         return False
 
     if not backtrack(0):

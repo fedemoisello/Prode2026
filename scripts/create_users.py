@@ -2,7 +2,7 @@
 Crea los usuarios del prode con PIN hasheado.
 Editá la lista USUARIOS antes de correr.
 Uso: py -3 scripts/create_users.py
-Guarda un archivo users_pines.txt con los PINs en claro (guardalo en 1Password).
+Genera users_pines.txt con los PINs en claro — guardalo en 1Password y borralo.
 """
 import os, sys, pathlib, secrets
 from dotenv import load_dotenv
@@ -37,6 +37,7 @@ def gen_pin() -> str:
 
 
 registros = []
+pines = []
 for nombre in USUARIOS:
     pin = gen_pin()
     pin_hash = bcrypt.hashpw(pin.encode(), bcrypt.gensalt()).decode()
@@ -45,14 +46,15 @@ for nombre in USUARIOS:
         "pin_hash": pin_hash,
         "is_admin": nombre == ADMIN,
     })
+    pines.append(pin)
     print(f"  {nombre}: {pin}")
 
 sb.table("users").upsert(registros, on_conflict="nombre").execute()
 
-# Guardar pines en archivo local (NO commitear)
 out = pathlib.Path("users_pines.txt")
-lines = [f"{r['nombre']}: {p}" for r, p in
-         zip(registros, [gen_pin() for _ in registros])]
-# Nota: los pines ya fueron usados arriba, aquí solo registramos los que se imprimieron
-print(f"\n⚠️  Guardá los PINs impresos arriba en 1Password.")
-print(f"✅ {len(registros)} usuarios creados/actualizados.")
+out.write_text(
+    "\n".join(f"{r['nombre']}: {p}" for r, p in zip(registros, pines)),
+    encoding="utf-8"
+)
+print(f"\n✅ {len(registros)} usuarios creados/actualizados.")
+print(f"⚠️  PINs guardados en {out.resolve()} — pasalos a 1Password y borrá el archivo.")
