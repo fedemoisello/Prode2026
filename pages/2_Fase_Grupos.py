@@ -4,6 +4,7 @@ from lib.deadline import assert_not_locked, is_locked
 from lib.db import query, upsert
 from lib.grupos import calcular_tabla, clasificados
 from lib.constants import GRUPOS, PARTIDOS_POR_GRUPO, EQUIPOS_POR_GRUPO
+from lib.flags import flag_img, team_label
 import json, pathlib
 
 st.set_page_config(page_title="Fase de Grupos · Prode 2026", page_icon="⚽", layout="wide")
@@ -53,7 +54,7 @@ for grupo in GRUPOS:
             for i, row in enumerate(tabla):
                 eq = teams[row.equipo]
                 clasif = "🟢" if i < 2 else ("🟡" if i == 2 else "🔴")
-                st.markdown(f"{clasif} {eq['flag']} **{eq['nombre']}** — {row.pts}pts DG{row.dg:+d} ({row.gf}-{row.gc})")
+                st.markdown(f"{clasif} {flag_img(eq)}**{eq['nombre']}** — {row.pts}pts DG{row.dg:+d} ({row.gf}-{row.gc})", unsafe_allow_html=True)
 
         with col_partidos:
             st.markdown("**Resultados**")
@@ -70,14 +71,16 @@ for grupo in GRUPOS:
                 default_l = prev.get("goles_local", 0)
                 default_v = prev.get("goles_visitante", 0)
 
-                c1, c2, c3, c4, c5 = st.columns([3, 1, 1, 1, 3])
-                c1.markdown(f"{loc['flag']} {loc['nombre']}")
-                gl = c2.number_input("", min_value=0, max_value=20, value=default_l,
+                st.markdown(
+                    f"{flag_img(loc)}**{loc['nombre']}** &nbsp;vs&nbsp; {flag_img(vis)}**{vis['nombre']}**",
+                    unsafe_allow_html=True,
+                )
+                c2, c3, c4 = st.columns([2, 1, 2])
+                gl = c2.number_input("Local", min_value=0, max_value=20, value=default_l,
                                      key=f"g_{pid}_l", label_visibility="collapsed", disabled=locked)
                 c3.markdown("<div style='text-align:center;padding-top:8px'>-</div>", unsafe_allow_html=True)
-                gv = c4.number_input("", min_value=0, max_value=20, value=default_v,
+                gv = c4.number_input("Visitante", min_value=0, max_value=20, value=default_v,
                                      key=f"g_{pid}_v", label_visibility="collapsed", disabled=locked)
-                c5.markdown(f"{vis['flag']} {vis['nombre']}")
                 st.caption(f"📅 {fecha_str} · {fix['ciudad']}")
                 nuevos_picks[pid] = {"goles_local": gl, "goles_visitante": gv}
 
