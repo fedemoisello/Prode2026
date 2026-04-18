@@ -1,6 +1,6 @@
 # Prode Mundial 2026 — Estado del proyecto
 
-**Última actualización:** 18 de abril de 2026  
+**Última actualización:** 18 de abril de 2026 (sesión 2)  
 **Autor:** Fede Moisello  
 **Deadline del producto:** 11 de junio de 2026, 13:00 hs ARG (16:00 UTC)
 
@@ -81,9 +81,9 @@
 ## Pendiente antes del 11 de junio
 
 ### Crítico
-- [ ] **Crear usuarios reales** — editar `scripts/create_users.py` con los 20 nombres y correr `py -3 scripts/create_users.py`
-- [ ] **Verificar key de Supabase** — la key actual es `sb_publishable_...` (nuevo formato). Confirmar en Project Settings → API que sea la anon/public key con el JWT `eyJ...` si hay problemas de conexión
-- [ ] **Correr tests** — `py -3 -m pytest tests/ -v` con las dependencias instaladas
+- [x] ~~Crear usuarios reales~~ — 17 usuarios creados con PINs (guardados en 1Password)
+- [x] ~~Verificar key de Supabase~~ — key rotada, nueva funcionando
+- [ ] **Correr tests** — `py -3 -m pytest tests/ -v`
 - [ ] **Test end-to-end** — hacer que Gasti, Bidi y Sebi carguen un prode de prueba completo
 
 ### Importante
@@ -107,11 +107,16 @@ py -3 -m pip install -r requirements.txt
 py -3 -m streamlit run app.py
 ```
 
-## Archivos sensibles (NO en GitHub)
+## Archivos sensibles (JAMÁS a GitHub)
 
 - `.streamlit/secrets.toml` — credenciales Supabase
 - `.env` — credenciales para scripts locales
-- `users_pines.txt` — PINs en claro (se genera al correr create_users.py, borrarlo después)
+- `users_pines.txt` — PINs en claro (borrar inmediatamente después de usar)
+- `secrets.toml.example` — solo placeholders, NUNCA credenciales reales
+
+## Incidentes de seguridad resueltos
+
+- **18/4/2026** — `secrets.toml.example` fue commiteado con credenciales reales. Detectado, archivo limpiado, key de Supabase rotada. Causa: archivo modificado con datos reales antes del commit sin ser verificado.
 
 ---
 
