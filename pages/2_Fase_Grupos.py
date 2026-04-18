@@ -39,8 +39,8 @@ for grupo in GRUPOS:
             gl = st.session_state.get(key_gl, picks_existentes.get(pid, {}).get("goles_local"))
             gv = st.session_state.get(key_gv, picks_existentes.get(pid, {}).get("goles_visitante"))
             partidos_para_tabla.append({
-                "local": fix["equipo_local"],
-                "visitante": fix["equipo_visitante"],
+                "local": fix["local"],
+                "visitante": fix["visitante"],
                 "goles_local": gl,
                 "goles_visitante": gv,
             })
@@ -60,8 +60,8 @@ for grupo in GRUPOS:
             nuevos_picks = {}
             for pid in partido_ids:
                 fix = fixture[pid]
-                loc = teams[fix["equipo_local"]]
-                vis = teams[fix["equipo_visitante"]]
+                loc = teams[fix["local"]]
+                vis = teams[fix["visitante"]]
                 from datetime import datetime, timezone
                 dt = datetime.fromisoformat(fix["fecha"].replace("Z", "+00:00"))
                 fecha_str = dt.strftime("%d/%m %H:%M") + " UTC"
