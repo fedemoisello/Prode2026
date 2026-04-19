@@ -5,9 +5,18 @@ from lib.db import query
 
 st.markdown("""
 <style>
-@media (max-width: 640px) {
-    [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(1) { order: 2; }
-    [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2) { order: 1; }
+/* Mobile: imagen arriba, form abajo */
+@media (max-width: 768px) {
+    [data-testid="stHorizontalBlock"] {
+        flex-direction: column-reverse !important;
+    }
+}
+/* Desktop: limitar alto de la imagen para evitar scroll */
+@media (min-width: 769px) {
+    [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2) img {
+        max-height: min(540px, calc(100vh - 150px));
+        object-fit: contain;
+    }
 }
 </style>
 """, unsafe_allow_html=True)

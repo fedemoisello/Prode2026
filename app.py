@@ -29,7 +29,7 @@ pg = st.navigation(pages)
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
-* { font-family: 'Poppins', sans-serif !important; }
+body { font-family: 'Poppins', sans-serif !important; }
 </style>
 """, unsafe_allow_html=True)
 
