@@ -72,6 +72,25 @@ BRACKET_SEMIS = {
 BRACKET_FINAL = {104: (101, 102)}
 BRACKET_TERCER = {103: (101, 102)}  # losers
 
+NOMBRES_FASE = {
+    "grupos":        "Fase de Grupos",
+    "16vos":         "16avos de Final",
+    "8vos":          "Octavos de Final",
+    "cuartos":       "Cuartos de Final",
+    "semi":          "Semifinales",
+    "tercer_puesto": "Tercer Puesto",
+    "final":         "Final",
+}
+
+NOMBRES_FASE_CORTO = {
+    "16vos":         "16avos",
+    "8vos":          "Octavos",
+    "cuartos":       "Cuartos",
+    "semi":          "Semis",
+    "tercer_puesto": "3er Puesto",
+    "final":         "Final",
+}
+
 # Puntos por fase para ganador de cruce
 PUNTOS_GANADOR = {
     "16vos":         5,

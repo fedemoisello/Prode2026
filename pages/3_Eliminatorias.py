@@ -1,23 +1,21 @@
 import streamlit as st
-import json, pathlib
 from lib.auth import require_login
 from lib.deadline import assert_not_locked, is_locked
 from lib.db import query, upsert
 from lib.grupos import calcular_tabla
 from lib.terceros import mejores_terceros, asignar_terceros
 from lib.bracket import build_16vos
-from lib.constants import GRUPOS, PARTIDOS_POR_GRUPO, EQUIPOS_POR_GRUPO, PUNTOS_GANADOR
+from lib.constants import GRUPOS, PARTIDOS_POR_GRUPO, EQUIPOS_POR_GRUPO, PUNTOS_GANADOR, NOMBRES_FASE
 from lib.flags import flag_img
+from lib.data import load_fixture, load_teams
 
 st.title("🎯 Eliminatorias")
 
 u = require_login()
 locked = is_locked()
 
-fixture_raw = json.loads(pathlib.Path("data/fixture.json").read_text(encoding="utf-8"))
-teams_raw = json.loads(pathlib.Path("data/teams.json").read_text(encoding="utf-8"))
-fixture = {f["id"]: f for f in fixture_raw}
-teams = {t["id"]: t for t in teams_raw}
+fixture = {f["id"]: f for f in load_fixture()}
+teams = load_teams()
 
 picks_g = {p["partido_id"]: p for p in query("picks_grupos", {"user_id": u["id"]})}
 picks_e = {p["partido_id"]: p for p in query("picks_eliminatorias", {"user_id": u["id"]})}
@@ -107,11 +105,6 @@ FASES = [
     ("tercer_puesto",[103]),
     ("final",        [104]),
 ]
-NOMBRES_FASE = {
-    "16vos": "16avos de Final", "8vos": "Octavos de Final",
-    "cuartos": "Cuartos de Final", "semi": "Semifinales",
-    "tercer_puesto": "Tercer Puesto", "final": "Final",
-}
 
 nuevos_picks: dict[int, dict] = {}
 

@@ -1,16 +1,15 @@
 import streamlit as st
-import json, pathlib
 from lib.auth import require_admin
 from lib.db import query, upsert, update
+from lib.data import load_fixture, load_teams
 
 st.title("⚙️ Admin")
 
 u = require_admin()
 
-fixture_raw = json.loads(pathlib.Path("data/fixture.json").read_text(encoding="utf-8"))
-teams_raw = json.loads(pathlib.Path("data/teams.json").read_text(encoding="utf-8"))
+fixture_raw = load_fixture()
+teams = load_teams()
 fixture = {f["id"]: f for f in fixture_raw}
-teams = {t["id"]: t for t in teams_raw}
 
 tab_results, tab_users = st.tabs(["Cargar resultados", "Usuarios"])
 
@@ -43,35 +42,48 @@ with tab_results:
                                  res.get("goles_visitante", 0), key="admin_gv")
             finalizado = st.checkbox("Partido finalizado", res.get("finalizado", False))
 
-            if st.button("Guardar resultado"):
-                upsert("results", {
-                    "partido_id": pid_sel,
-                    "goles_local": gl,
-                    "goles_visitante": gv,
-                    "finalizado": finalizado,
-                })
-                st.success("Guardado.")
+            payload = {
+                "partido_id": pid_sel,
+                "goles_local": gl,
+                "goles_visitante": gv,
+                "finalizado": finalizado,
+            }
         else:
             equipos_disponibles = list(teams.keys())
             ganador_prev = res.get("ganador")
             idx = equipos_disponibles.index(ganador_prev) if ganador_prev in equipos_disponibles else 0
-            ganador = st.selectbox("Equipo ganador", equipos_disponibles,
-                                   format_func=lambda x: f"{teams[x]['flag']} {teams[x]['nombre']}",
-                                   index=idx)
+            ganador = st.selectbox(
+                "Equipo ganador", equipos_disponibles,
+                format_func=lambda x: teams[x]["nombre"],
+                index=idx,
+            )
             c1, c2 = st.columns(2)
             gl = c1.number_input("Goles local (opcional)", 0, 20, res.get("goles_local", 0))
             gv = c2.number_input("Goles visitante (opcional)", 0, 20, res.get("goles_visitante", 0))
             finalizado = st.checkbox("Partido finalizado", res.get("finalizado", False))
 
-            if st.button("Guardar resultado"):
-                upsert("results", {
-                    "partido_id": pid_sel,
-                    "ganador": ganador,
-                    "goles_local": gl,
-                    "goles_visitante": gv,
-                    "finalizado": finalizado,
-                })
+            payload = {
+                "partido_id": pid_sel,
+                "ganador": ganador,
+                "goles_local": gl,
+                "goles_visitante": gv,
+                "finalizado": finalizado,
+            }
+
+        # Confirmación de 2 pasos
+        if st.button("Guardar resultado"):
+            st.session_state["confirm_save"] = True
+
+        if st.session_state.get("confirm_save"):
+            st.warning("¿Confirmar? Esto sobreescribe el resultado existente.")
+            col_yes, col_no = st.columns(2)
+            if col_yes.button("Sí, guardar", type="primary"):
+                upsert("results", payload)
                 st.success("Guardado.")
+                st.session_state["confirm_save"] = False
+            if col_no.button("Cancelar"):
+                st.session_state["confirm_save"] = False
+                st.rerun()
 
 # ── Usuarios ───────────────────────────────────────────────────────────────────
 with tab_users:

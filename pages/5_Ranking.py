@@ -28,7 +28,8 @@ with st.spinner("Calculando puntajes..."):
                 "grupos_clasificados": desglose["grupos_clasificados"],
                 "eliminatorias": desglose["eliminatorias"],
             })
-        except Exception:
+        except Exception as e:
+            st.warning(f"Error calculando puntos de {user['nombre']}: {e}")
             resultados.append({"nombre": user["nombre"], "total": 0,
                                "grupos_resultado": 0, "grupos_clasificados": 0, "eliminatorias": 0})
 

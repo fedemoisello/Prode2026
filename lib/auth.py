@@ -74,8 +74,9 @@ def get_session() -> dict | None:
                 if datetime.now(timezone.utc) - login_at < timedelta(hours=SESSION_TTL_HOURS):
                     st.session_state["user"] = data
                     return data
-                # Cookie expirada — borrarla
+                # Cookie expirada — borrarla y avisar
                 cm.delete(_COOKIE_NAME)
+                st.session_state["session_expired"] = True
         except Exception:
             pass
     return None

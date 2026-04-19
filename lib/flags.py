@@ -5,5 +5,6 @@ def flag_img(team: dict, size: int = 20) -> str:
     return f'<img src="https://flagcdn.com/w{size}/{iso2}.png" height="{size}" style="vertical-align:middle;margin-right:4px">'
 
 
-def team_label(team: dict) -> str:
-    return f'{flag_img(team)}{team["nombre"]}'
+def team_label(team: dict, bold: bool = False) -> str:
+    name = f"<b>{team['nombre']}</b>" if bold else team["nombre"]
+    return f"{flag_img(team)}{name}"

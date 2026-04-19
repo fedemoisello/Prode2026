@@ -16,7 +16,13 @@ if "_cm" not in st.session_state:
 u = get_session()
 
 with st.sidebar:
-    st.toggle("🇦🇷 Hora Buenos Aires (GMT-3)", key="tz_bsas")
+    col_lbl, col_tog = st.columns([5, 1])
+    col_lbl.markdown(
+        '<img src="https://flagcdn.com/w20/ar.png" height="14" '
+        'style="vertical-align:middle;margin-right:5px">Hora Argentina',
+        unsafe_allow_html=True,
+    )
+    col_tog.toggle("", key="tz_bsas", label_visibility="collapsed")
 
 pages = [
     st.Page("pages/1_Inicio.py",       title="Inicio",            icon="🏠", default=True),

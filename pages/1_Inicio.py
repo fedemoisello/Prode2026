@@ -58,6 +58,8 @@ with col_left:
             st.info(f"🔒 Prode cerrado desde {get_deadline().strftime('%d/%m/%Y %H:%M')} UTC")
 
     else:
+        if st.session_state.pop("session_expired", False):
+            st.info("Tu sesión expiró. Ingresá nuevamente.")
         st.markdown("#### Ingresar")
 
         with st.form("login_form"):

@@ -5,8 +5,8 @@ from lib.db import query, upsert
 from lib.grupos import calcular_tabla, clasificados
 from lib.constants import GRUPOS, PARTIDOS_POR_GRUPO, EQUIPOS_POR_GRUPO
 from lib.flags import flag_img, team_label
+from lib.data import load_fixture, load_teams
 from datetime import datetime, timedelta
-import json, pathlib
 
 st.title("⚽ Fase de Grupos")
 
@@ -21,10 +21,8 @@ if "grupos_guardados" not in st.session_state:
     st.session_state["grupos_guardados"] = set()
 
 # Cargar fixture y picks existentes
-fixture_raw = json.loads(pathlib.Path("data/fixture.json").read_text(encoding="utf-8"))
-teams_raw = json.loads(pathlib.Path("data/teams.json").read_text(encoding="utf-8"))
-fixture = {f["id"]: f for f in fixture_raw if f["fase"] == "grupos"}
-teams = {t["id"]: t for t in teams_raw}
+fixture = {f["id"]: f for f in load_fixture() if f["fase"] == "grupos"}
+teams = load_teams()
 
 picks_existentes = {p["partido_id"]: p
                     for p in query("picks_grupos", {"user_id": u["id"]})}

@@ -1,37 +1,29 @@
 import streamlit as st
-import json, pathlib
 from collections import defaultdict
 from datetime import datetime, timedelta, timezone
+from lib.constants import NOMBRES_FASE
+from lib.flags import team_label
+from lib.data import load_fixture, load_teams
 
 st.title("📅 Fixture")
 
-fixture_raw = json.loads(pathlib.Path("data/fixture.json").read_text(encoding="utf-8"))
-teams_raw   = json.loads(pathlib.Path("data/teams.json").read_text(encoding="utf-8"))
-teams = {t["id"]: t for t in teams_raw}
+fixture_raw = load_fixture()
+teams = load_teams()
 
 tz_bsas  = st.session_state.get("tz_bsas", False)
 offset   = timedelta(hours=-3) if tz_bsas else timedelta(0)
 tz_label = "BA" if tz_bsas else "UTC"
 today    = (datetime.now(timezone.utc) + offset).date()
 
-NOMBRES_FASE = {
-    "grupos":        "Fase de Grupos",
-    "16vos":         "16avos de Final",
-    "8vos":          "Octavos de Final",
-    "cuartos":       "Cuartos de Final",
-    "semi":          "Semifinales",
-    "tercer_puesto": "Tercer Puesto",
-    "final":         "Final",
-}
 FASES_ORDER = ["grupos", "16vos", "8vos", "cuartos", "semi", "tercer_puesto", "final"]
+
+MESES = {1:"enero",2:"febrero",3:"marzo",4:"abril",5:"mayo",6:"junio",
+         7:"julio",8:"agosto",9:"septiembre",10:"octubre",11:"noviembre",12:"diciembre"}
+DIAS  = {0:"Lunes",1:"Martes",2:"Miércoles",3:"Jueves",4:"Viernes",5:"Sábado",6:"Domingo"}
 
 
 def parse_dt(s):
     return datetime.fromisoformat(s.replace("Z", "+00:00"))
-
-
-def fmt_hora(s):
-    return (parse_dt(s) + offset).strftime("%H:%M")
 
 
 def fmt_ph(ph):
@@ -47,13 +39,6 @@ def fmt_ph(ph):
     return ph
 
 
-def team_html(team_id):
-    t = teams.get(team_id)
-    if not t:
-        return team_id
-    return f'<img src="https://flagcdn.com/w20/{t["iso2"]}.png" height="14" style="vertical-align:middle;margin-right:3px"><b>{t["nombre"]}</b>'
-
-
 def is_arg(fix):
     return fix.get("local") == "ARG" or fix.get("visitante") == "ARG"
 
@@ -66,8 +51,10 @@ def match_card(fix, show_date=False):
     ciudad = fix["ciudad"]
 
     if loc_id and vis_id:
-        loc_str = team_html(loc_id)
-        vis_str = team_html(vis_id)
+        loc_t = teams.get(loc_id)
+        vis_t = teams.get(vis_id)
+        loc_str = team_label(loc_t, bold=True) if loc_t else f"<b>{loc_id}</b>"
+        vis_str = team_label(vis_t, bold=True) if vis_t else f"<b>{vis_id}</b>"
     else:
         loc_str = f"<b>{fmt_ph(fix.get('ph_local', ''))}</b>"
         vis_str = f"<b>{fmt_ph(fix.get('ph_visitante', ''))}</b>"
@@ -103,10 +90,6 @@ with tab1:
         d = (parse_dt(fix["fecha"]) + offset).date()
         by_date[d].append(fix)
 
-    MESES = {1:"enero",2:"febrero",3:"marzo",4:"abril",5:"mayo",6:"junio",
-             7:"julio",8:"agosto",9:"septiembre",10:"octubre",11:"noviembre",12:"diciembre"}
-    DIAS  = {0:"Lunes",1:"Martes",2:"Miércoles",3:"Jueves",4:"Viernes",5:"Sábado",6:"Domingo"}
-
     for date in sorted(by_date.keys()):
         partidos = sorted(by_date[date], key=lambda f: f["fecha"])
         dia_str  = f"{DIAS[date.weekday()]} {date.day} de {MESES[date.month]}"
@@ -121,7 +104,7 @@ with tab1:
         for fix in partidos:
             match_card(fix)
 
-# ── Tab 2: por fase ────────────────────────────────────────────────────────────
+# ── Tab 2: por grupos y fase ───────────────────────────────────────────────────
 with tab2:
     for fase in FASES_ORDER:
         partidos_fase = [f for f in fixture_raw if f["fase"] == fase]
