@@ -3,7 +3,11 @@ from lib.auth import login, set_session, get_session, get_all_users
 from lib.deadline import is_locked, tiempo_restante, get_deadline
 from lib.db import query
 
-st.title("🏠 Inicio")
+_, col_logo, _ = st.columns([2, 1, 2])
+with col_logo:
+    st.image("assets/logo_mundial_2026.svg")
+
+st.title("Prode Mundial 2026")
 
 u = get_session()
 
