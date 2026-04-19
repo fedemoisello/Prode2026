@@ -11,11 +11,15 @@ st.markdown("""
         flex-direction: column-reverse !important;
     }
 }
-/* Desktop: limitar alto de la imagen para evitar scroll */
+/* Desktop: limitar alto de la imagen y reducir padding del contenedor para evitar scroll */
 @media (min-width: 769px) {
     [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2) img {
         max-height: min(540px, calc(100vh - 150px));
         object-fit: contain;
+    }
+    .block-container {
+        padding-top: 1.5rem !important;
+        padding-bottom: 1.5rem !important;
     }
 }
 </style>
