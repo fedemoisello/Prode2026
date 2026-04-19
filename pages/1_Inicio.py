@@ -1,5 +1,5 @@
 import streamlit as st
-from lib.auth import login, set_session, get_session, get_all_users
+from lib.auth import login, set_session, get_session, get_all_users, clear_session
 from lib.deadline import is_locked, tiempo_restante, get_deadline
 from lib.db import query
 
@@ -35,7 +35,7 @@ with col_left:
     if u:
         st.success(f"Sesión activa: **{u['nombre']}**")
         if st.button("Cerrar sesión"):
-            del st.session_state["user"]
+            clear_session()
             st.rerun()
 
         locked = is_locked()

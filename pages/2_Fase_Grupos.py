@@ -116,3 +116,13 @@ for grupo in GRUPOS:
                     st.rerun()
                 except PermissionError as e:
                     st.error(str(e))
+
+total_picks_g = len(query("picks_grupos", {"user_id": u["id"]}))
+if total_picks_g >= 72:
+    st.divider()
+    if not locked:
+        st.success("✅ Fase de grupos completa. ¡Ahora cargá las eliminatorias!")
+        if st.button("Continuar a Mis Eliminatorias →", type="primary", use_container_width=True):
+            st.switch_page("pages/3_Eliminatorias.py")
+    else:
+        st.success("✅ Fase de grupos completa.")

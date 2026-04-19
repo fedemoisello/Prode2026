@@ -1,4 +1,5 @@
 import streamlit as st
+import extra_streamlit_components as stx
 from lib.auth import get_session
 
 st.set_page_config(
@@ -8,18 +9,22 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
+# CookieManager inicializado una sola vez por sesión
+if "_cm" not in st.session_state:
+    st.session_state["_cm"] = stx.CookieManager(key="prode_cm")
+
 u = get_session()
 
 with st.sidebar:
     st.toggle("🇦🇷 Hora Buenos Aires (GMT-3)", key="tz_bsas")
 
 pages = [
-    st.Page("pages/1_Inicio.py",       title="Inicio",         icon="🏠", default=True),
-    st.Page("pages/2_Fase_Grupos.py",  title="Fase de Grupos", icon="⚽"),
-    st.Page("pages/3_Eliminatorias.py",title="Eliminatorias",  icon="🎯"),
-    st.Page("pages/4_Mi_Prode.py",     title="Mi Prode",       icon="📊"),
-    st.Page("pages/5_Fixture.py",      title="Fixture",        icon="📅"),
-    st.Page("pages/5_Ranking.py",      title="Ranking",        icon="🏆"),
+    st.Page("pages/1_Inicio.py",       title="Inicio",            icon="🏠", default=True),
+    st.Page("pages/2_Fase_Grupos.py",  title="Mis Grupos",        icon="✏️"),
+    st.Page("pages/3_Eliminatorias.py",title="Mis Eliminatorias", icon="✏️"),
+    st.Page("pages/4_Mi_Prode.py",     title="Ver mi Prode",      icon="👁"),
+    st.Page("pages/5_Fixture.py",      title="Fixture",           icon="📅"),
+    st.Page("pages/5_Ranking.py",      title="Ranking",           icon="🏆"),
 ]
 if u and u.get("is_admin"):
     pages.append(st.Page("pages/6_Admin.py", title="Admin", icon="⚙️"))
