@@ -7,6 +7,7 @@ from lib.grupos import calcular_tabla
 from lib.terceros import mejores_terceros, asignar_terceros
 from lib.bracket import build_16vos
 from lib.constants import GRUPOS, PARTIDOS_POR_GRUPO, EQUIPOS_POR_GRUPO, PUNTOS_GANADOR
+from lib.flags import flag_img
 
 st.title("🎯 Eliminatorias")
 
@@ -81,10 +82,21 @@ def resolver_equipos(pid: int) -> tuple[str | None, str | None]:
 
 
 def equipo_label(eid: str | None) -> str:
+    """Nombre plano para usar en radio/number_input (sin HTML)."""
     if not eid:
         return "Por definir"
     t = teams.get(eid)
-    return f"{t['flag']} {t['nombre']}" if t else eid
+    return t["nombre"] if t else eid
+
+
+def equipo_header(eid: str | None) -> str:
+    """Label con bandera CDN para mostrar en markdown."""
+    if not eid:
+        return "Por definir"
+    t = teams.get(eid)
+    if not t:
+        return eid
+    return f'{flag_img(t)}<b>{t["nombre"]}</b>'
 
 
 FASES = [
@@ -119,7 +131,11 @@ for fase, partido_ids in FASES:
         prev_gv = prev.get("goles_visitante", 0)
 
         with col:
-            st.markdown(f"**Partido {pid}** · {fix.get('ciudad', '')}")
+            st.markdown(
+                f"{equipo_header(loc_id)} &nbsp;vs&nbsp; {equipo_header(vis_id)}"
+                f"<br><small style='opacity:.6'>{fix.get('ciudad','')}</small>",
+                unsafe_allow_html=True,
+            )
             opciones = [eid for eid in [loc_id, vis_id] if eid]
 
             if not opciones:

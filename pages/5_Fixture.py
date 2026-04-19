@@ -94,7 +94,7 @@ def match_card(fix, show_date=False):
 </div>""", unsafe_allow_html=True)
 
 
-tab1, tab2 = st.tabs(["📆 Por Fecha", "🏆 Por Fase"])
+tab1, tab2 = st.tabs(["📆 Por Fecha", "⚽ Por Grupos"])
 
 # ── Tab 1: cronológico ─────────────────────────────────────────────────────────
 with tab1:
