@@ -57,7 +57,7 @@ for fase in fases:
     for fix in partidos_fase:
         pick = picks_e.get(fix["id"])
         if not pick:
-            st.caption(f"Partido {fix['id']}: sin pick")
+            st.caption(f"Partido {fix['id']}: sin pronosticar")
             continue
         ganador = teams.get(pick.get("equipo_ganador"))
         gl = pick.get("goles_local", "—")
