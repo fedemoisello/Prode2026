@@ -5,11 +5,12 @@ from lib.db import query
 
 st.markdown("""
 <style>
-[data-testid="stImage"] img { display:block; margin:0 auto; }
+[data-testid="stImage"] { display:flex; justify-content:center; }
+[data-testid="stImage"] img { max-width:200px; }
 </style>
 """, unsafe_allow_html=True)
 
-st.image("assets/logo_mundial_2026.svg", width=150)
+st.image("assets/logo_mundial_2026.svg")
 st.markdown("<h1 style='text-align:center;font-size:1.6em;margin-top:0.3em'>Prode Mundial 2026</h1>",
             unsafe_allow_html=True)
 
@@ -41,7 +42,7 @@ if u:
         st.info(f"🔒 Prode cerrado desde {get_deadline().strftime('%d/%m/%Y %H:%M')} UTC")
 
 else:
-    st.subheader("Ingresar")
+    st.markdown("#### Ingresar")
 
     with st.form("login_form"):
         nombre = st.text_input("Nombre", placeholder="Tu nombre")
