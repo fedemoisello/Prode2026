@@ -3,11 +3,15 @@ from lib.auth import login, set_session, get_session, get_all_users
 from lib.deadline import is_locked, tiempo_restante, get_deadline
 from lib.db import query
 
-_, col_logo, _ = st.columns([2, 1, 2])
-with col_logo:
-    st.image("assets/logo_mundial_2026.svg")
+st.markdown("""
+<style>
+[data-testid="stImage"] img { display:block; margin:0 auto; }
+</style>
+""", unsafe_allow_html=True)
 
-st.title("Prode Mundial 2026")
+st.image("assets/logo_mundial_2026.svg", width=150)
+st.markdown("<h1 style='text-align:center;font-size:1.6em;margin-top:0.3em'>Prode Mundial 2026</h1>",
+            unsafe_allow_html=True)
 
 u = get_session()
 
