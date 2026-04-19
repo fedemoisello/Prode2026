@@ -18,6 +18,7 @@ pages = [
     st.Page("pages/2_Fase_Grupos.py",  title="Fase de Grupos", icon="⚽"),
     st.Page("pages/3_Eliminatorias.py",title="Eliminatorias",  icon="🎯"),
     st.Page("pages/4_Mi_Prode.py",     title="Mi Prode",       icon="📊"),
+    st.Page("pages/5_Fixture.py",      title="Fixture",        icon="📅"),
     st.Page("pages/5_Ranking.py",      title="Ranking",        icon="🏆"),
 ]
 if u and u.get("is_admin"):
