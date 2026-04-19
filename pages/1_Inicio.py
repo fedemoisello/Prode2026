@@ -12,7 +12,7 @@ st.markdown("""
     }
     .block-container {
         padding-top: 0.5rem !important;
-        padding-bottom: 1rem !important;
+        padding-bottom: 0.5rem !important;
     }
 }
 /* Desktop: limitar alto de la imagen y reducir padding del contenedor para evitar scroll */
