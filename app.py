@@ -25,4 +25,12 @@ if u and u.get("is_admin"):
     pages.append(st.Page("pages/6_Admin.py", title="Admin", icon="⚙️"))
 
 pg = st.navigation(pages)
+
+st.markdown("""
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+* { font-family: 'Poppins', sans-serif !important; }
+</style>
+""", unsafe_allow_html=True)
+
 pg.run()
