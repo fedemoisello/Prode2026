@@ -25,9 +25,6 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-st.markdown("<h1 style='text-align:center;font-size:1.6em;margin-top:0.3em'>Prode Mundial 2026</h1>",
-            unsafe_allow_html=True)
-
 u = get_session()
 
 col_left, col_right = st.columns([3, 2], gap="large")
@@ -36,6 +33,8 @@ with col_right:
     st.image("assets/logo_mundial_2026.svg", use_container_width=True)
 
 with col_left:
+    st.markdown("<h1 style='font-size:1.6em;margin-top:0'>Prode Mundial 2026</h1>",
+                unsafe_allow_html=True)
     if u:
         st.success(f"Sesión activa: **{u['nombre']}**")
         if st.button("Cerrar sesión"):
