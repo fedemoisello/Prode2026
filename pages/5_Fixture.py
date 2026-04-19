@@ -58,10 +58,11 @@ def is_arg(fix):
     return fix.get("local") == "ARG" or fix.get("visitante") == "ARG"
 
 
-def match_card(fix):
+def match_card(fix, show_date=False):
     loc_id = fix.get("local")
     vis_id = fix.get("visitante")
-    hora   = fmt_hora(fix["fecha"])
+    dt     = parse_dt(fix["fecha"])
+    hora   = (dt + offset).strftime("%H:%M")
     ciudad = fix["ciudad"]
 
     if loc_id and vis_id:
@@ -71,18 +72,24 @@ def match_card(fix):
         loc_str = f"<b>{fmt_ph(fix.get('ph_local', ''))}</b>"
         vis_str = f"<b>{fmt_ph(fix.get('ph_visitante', ''))}</b>"
 
-    arg = is_arg(fix)
-    bg     = "#EAF4FB" if arg else "transparent"
-    border = "border-left:3px solid #74ACDF;" if arg else "border-left:3px solid transparent;"
-    badge  = " &nbsp;🔵⚪" if arg else ""
+    arg   = is_arg(fix)
+    bg    = "#5DADE2" if arg else "transparent"
+    color = "white"  if arg else "inherit"
+    badge = " &nbsp;🔵⚪" if arg else ""
+
+    if show_date:
+        dt_local  = dt + offset
+        fecha_str = f"{DIAS[dt_local.weekday()]} {dt_local.day} {MESES[dt_local.month]} · "
+    else:
+        fecha_str = ""
 
     st.markdown(f"""
 <div style="display:flex;justify-content:space-between;align-items:center;
             padding:7px 10px;margin:3px 0;border-radius:5px;
-            background:{bg};{border}">
+            background:{bg};color:{color}">
   <span style="flex:1">{loc_str} &nbsp;vs&nbsp; {vis_str}{badge}</span>
-  <span style="white-space:nowrap;margin-left:12px;color:#777;font-size:0.82em">
-    {hora} {tz_label} · {ciudad}
+  <span style="white-space:nowrap;margin-left:12px;font-size:0.82em;opacity:0.85">
+    {fecha_str}{hora} {tz_label} · {ciudad}
   </span>
 </div>""", unsafe_allow_html=True)
 
@@ -134,9 +141,9 @@ with tab2:
                 label = f"Grupo {grupo}{'  🔵⚪' if tiene_arg else ''}"
                 with st.expander(label, expanded=tiene_arg):
                     for fix in partidos_grupo:
-                        match_card(fix)
+                        match_card(fix, show_date=True)
         else:
             for fix in sorted(partidos_fase, key=lambda f: f["fecha"]):
-                match_card(fix)
+                match_card(fix, show_date=True)
 
         st.divider()
