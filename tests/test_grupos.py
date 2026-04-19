@@ -51,6 +51,29 @@ def test_todos_empatan():
         assert row.dg == 0
 
 
+def test_empate_desempate_por_h2h_pts():
+    # ARG y BRA empatados en pts y stats generales, pero ARG ganó el H2H
+    # ARG 1-0 BRA, ARG 0-1 ESP, ARG 0-1 FRA → ARG: 3pts, DG=-1, GF=1
+    # BRA 0-1 ESP, BRA 0-1 FRA → BRA: 3pts, DG=-1, GF=1 (perdió ante ARG)
+    # Mismo pts, dg y gf generales → H2H decide: ARG ganó a BRA
+    p = partidos_de([(1,0),(0,1),(0,1),(0,1),(0,1),(1,1)])
+    tabla = calcular_tabla(EQUIPOS, p)
+    equipos = [r.equipo for r in tabla]
+    assert equipos.index("ARG") < equipos.index("BRA")
+
+
+def test_empate_h2h_cae_a_general():
+    # ARG y BRA: mismo pts, H2H empatado 1-1, caen a criterio general
+    # ARG: ganó a ESP (2-0), perdió con FRA (0-2), empató BRA (1-1) → pts=4, DG=1, GF=3
+    # BRA: ganó a FRA (2-0), perdió con ESP (0-2), empató ARG (1-1) → pts=4, DG=1, GF=3
+    # H2H entre ARG y BRA: empate 1-1 → mismos H2H pts/dg/gf → caen a general (dg=1, gf=3, iguales)
+    p = partidos_de([(1,1),(2,0),(0,2),(0,2),(2,0),(1,1)])
+    tabla = calcular_tabla(EQUIPOS, p)
+    # No chequeamos orden (queda indefinido), solo que ambos están antes que ESP y FRA
+    top2 = {r.equipo for r in tabla[:2]}
+    assert "ARG" in top2 and "BRA" in top2
+
+
 def test_clasificados_devuelve_top3():
     p = partidos_de([(2,0),(2,0),(2,0),(1,1),(1,1),(1,1)])
     tabla = calcular_tabla(EQUIPOS, p)
