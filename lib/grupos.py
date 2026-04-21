@@ -1,6 +1,6 @@
 """
 Calcula la tabla de posiciones de un grupo a partir de los resultados
-(reales o predichos). Aplica criterios de desempate FIFA (hasta DFD).
+(reales o predichos). Aplica criterios de desempate FIFA Art. 13.
 """
 from dataclasses import dataclass, field
 
@@ -14,6 +14,7 @@ class RowTabla:
     pp: int = 0
     gf: int = 0
     gc: int = 0
+    fair_play_pts: int = 0  # acumulado del grupo; más alto = mejor conducta
 
     @property
     def pts(self) -> int:
@@ -24,12 +25,27 @@ class RowTabla:
         return self.gf - self.gc
 
 
-def calcular_tabla(equipos: list[str], partidos: list[dict]) -> list[RowTabla]:
+def _fp_partido(tarjetas: dict) -> int:
+    """Convierte dict de tarjetas de un equipo en puntos fair play (negativo = peor)."""
+    return -(
+        tarjetas.get("amarillas", 0) * 1 +
+        tarjetas.get("rojas_doble", 0) * 3 +
+        tarjetas.get("rojas_directas", 0) * 4 +
+        tarjetas.get("amarilla_roja", 0) * 5
+    )
+
+
+def calcular_tabla(
+    equipos: list[str],
+    partidos: list[dict],
+    ranking_fifa: dict[str, int] | None = None,
+) -> list[RowTabla]:
     """
     equipos: lista de 4 IDs de equipos del grupo
-    partidos: lista de dicts con keys local, visitante, goles_local, goles_visitante
-              Solo se incluyen partidos con ambos goles definidos (no None).
-    Devuelve lista de RowTabla ordenada por criterios FIFA.
+    partidos: lista de dicts con keys local, visitante, goles_local, goles_visitante.
+              Opcionalmente: tarjetas = {equipo_id: {amarillas, rojas_doble, rojas_directas, amarilla_roja}}
+    ranking_fifa: {equipo_id: posicion} — menor número = mejor ranking
+    Devuelve lista de RowTabla ordenada por criterios FIFA Art. 13.
     """
     filas = {e: RowTabla(equipo=e) for e in equipos}
 
@@ -58,12 +74,21 @@ def calcular_tabla(equipos: list[str], partidos: list[dict]) -> list[RowTabla]:
             filas[loc].pe += 1
             filas[vis].pe += 1
 
+        # Fair play: acumular si el partido tiene datos de tarjetas
+        for equipo, t in p.get("tarjetas", {}).items():
+            if equipo in filas:
+                filas[equipo].fair_play_pts += _fp_partido(t)
+
     tabla = list(filas.values())
-    return _ordenar_fifa(tabla, partidos)
+    return _ordenar_fifa(tabla, partidos, ranking_fifa or {})
 
 
-def _ordenar_fifa(tabla: list[RowTabla], partidos: list[dict]) -> list[RowTabla]:
-    """Ordena por criterios FIFA 2026: pts → H2H → general (dg, gf)."""
+def _ordenar_fifa(
+    tabla: list[RowTabla],
+    partidos: list[dict],
+    ranking_fifa: dict[str, int],
+) -> list[RowTabla]:
+    """Ordena por criterios FIFA Art. 13: pts → H2H (paso 1+2) → dg/gf/fp/ranking."""
     grupos_pts: dict[int, list[RowTabla]] = {}
     for r in tabla:
         grupos_pts.setdefault(r.pts, []).append(r)
@@ -74,7 +99,7 @@ def _ordenar_fifa(tabla: list[RowTabla], partidos: list[dict]) -> list[RowTabla]
         if len(grupo) == 1:
             result.extend(grupo)
         else:
-            result.extend(_resolver_empate(grupo, partidos, profundidad=0))
+            result.extend(_resolver_empate(grupo, partidos, profundidad=0, ranking_fifa=ranking_fifa))
     return result
 
 
@@ -100,11 +125,17 @@ def _h2h_stats(empatados: list[RowTabla], partidos: list[dict]) -> dict[str, dic
     return stats
 
 
-def _resolver_empate(empatados: list[RowTabla], partidos: list[dict], profundidad: int) -> list[RowTabla]:
+def _resolver_empate(
+    empatados: list[RowTabla],
+    partidos: list[dict],
+    profundidad: int,
+    ranking_fifa: dict[str, int],
+) -> list[RowTabla]:
     """
-    Resuelve empate en puntos aplicando H2H (paso 1 y 2 FIFA).
-    profundidad=0: primer pase H2H; profundidad=1: segundo pase H2H entre restantes.
-    Si sigue empatado, aplica criterio general (dg, gf).
+    Resuelve empate en puntos aplicando criterios FIFA Art. 13.
+    Paso 1 (profundidad=0): H2H entre todos los empatados.
+    Paso 2 (profundidad=1): H2H solo entre los que siguen igualados.
+    Tras el paso 2: dg general → gf general → fair play → ranking FIFA.
     """
     if len(empatados) == 1:
         return empatados
@@ -127,11 +158,13 @@ def _resolver_empate(empatados: list[RowTabla], partidos: list[dict], profundida
         if len(subgrupo) == 1:
             result.extend(subgrupo)
         elif profundidad == 0:
-            # Segundo pase H2H entre los que siguen empatados (FIFA paso 2)
-            result.extend(_resolver_empate(subgrupo, partidos, profundidad=1))
+            result.extend(_resolver_empate(subgrupo, partidos, profundidad=1, ranking_fifa=ranking_fifa))
         else:
-            # Criterio general: dg y gf de toda la fase de grupos
-            subgrupo.sort(key=lambda r: (r.dg, r.gf), reverse=True)
+            # Criterios d, e, f, g, h del Art. 13: general dg → gf → fair play → ranking FIFA
+            subgrupo.sort(
+                key=lambda r: (r.dg, r.gf, r.fair_play_pts, -ranking_fifa.get(r.equipo, 999)),
+                reverse=True,
+            )
             result.extend(subgrupo)
         i = j
 

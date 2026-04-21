@@ -6,13 +6,28 @@ Usamos backtracking para encontrar asignación válida.
 from lib.constants import TERCEROS_VALIDOS
 
 
-def mejores_terceros(terceros_por_grupo: dict) -> list[dict]:
+def mejores_terceros(
+    terceros_por_grupo: dict,
+    ranking_fifa: dict[str, int] | None = None,
+) -> list[dict]:
     """
-    terceros_por_grupo: {grupo: {pts, dg, gf, equipo}}
+    terceros_por_grupo: {grupo: {pts, dg, gf, fair_play_pts, equipo}}
+    ranking_fifa: {equipo_id: posicion} — menor número = mejor ranking
     Devuelve lista de los 8 mejores terceros, ordenada de mejor a peor.
+    Criterios FIFA Art. 13 (sección terceros): pts → dg → gf → fair play → ranking FIFA.
     """
+    rf = ranking_fifa or {}
     candidatos = list(terceros_por_grupo.values())
-    candidatos.sort(key=lambda x: (x["pts"], x["dg"], x["gf"]), reverse=True)
+    candidatos.sort(
+        key=lambda x: (
+            x["pts"],
+            x["dg"],
+            x["gf"],
+            x.get("fair_play_pts", 0),
+            -rf.get(x["equipo"], 999),
+        ),
+        reverse=True,
+    )
     return candidatos[:8]
 
 

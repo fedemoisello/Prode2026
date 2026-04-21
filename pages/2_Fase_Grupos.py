@@ -5,7 +5,7 @@ from lib.db import query, upsert
 from lib.grupos import calcular_tabla, clasificados
 from lib.constants import GRUPOS, PARTIDOS_POR_GRUPO, EQUIPOS_POR_GRUPO
 from lib.flags import flag_img, team_label
-from lib.data import load_fixture, load_teams
+from lib.data import load_fixture, load_teams, load_ranking_fifa
 from datetime import datetime, timedelta
 
 st.title("⚽ Fase de Grupos")
@@ -23,6 +23,7 @@ if "grupos_guardados" not in st.session_state:
 # Cargar fixture y picks existentes
 fixture = {f["id"]: f for f in load_fixture() if f["fase"] == "grupos"}
 teams = load_teams()
+ranking_fifa = load_ranking_fifa()
 
 picks_existentes = {p["partido_id"]: p
                     for p in query("picks_grupos", {"user_id": u["id"]})}
@@ -55,7 +56,7 @@ for grupo in GRUPOS:
                 "goles_visitante": gv,
             })
 
-        tabla = calcular_tabla(equipos, partidos_para_tabla)
+        tabla = calcular_tabla(equipos, partidos_para_tabla, ranking_fifa=ranking_fifa)
         col_tabla, col_partidos = st.columns([1, 2])
 
         with col_tabla:

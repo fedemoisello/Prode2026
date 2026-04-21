@@ -4,7 +4,7 @@ from lib.db import query
 from lib.grupos import calcular_tabla
 from lib.constants import GRUPOS, PARTIDOS_POR_GRUPO, EQUIPOS_POR_GRUPO, NOMBRES_FASE_CORTO
 from lib.flags import flag_img
-from lib.data import load_fixture, load_teams
+from lib.data import load_fixture, load_teams, load_ranking_fifa
 
 st.title("📊 Mi Prode")
 
@@ -13,6 +13,7 @@ u = require_login()
 fixture_raw = load_fixture()
 fixture = {f["id"]: f for f in fixture_raw}
 teams = load_teams()
+ranking_fifa = load_ranking_fifa()
 
 picks_g = {p["partido_id"]: p for p in query("picks_grupos", {"user_id": u["id"]})}
 picks_e = {p["partido_id"]: p for p in query("picks_eliminatorias", {"user_id": u["id"]})}
@@ -39,7 +40,7 @@ for grupo in GRUPOS:
                 "local": fix["local"], "visitante": fix["visitante"],
                 "goles_local": pick.get("goles_local"), "goles_visitante": pick.get("goles_visitante"),
             })
-        tabla = calcular_tabla(equipos, partidos)
+        tabla = calcular_tabla(equipos, partidos, ranking_fifa=ranking_fifa)
         st.divider()
         for i, row in enumerate(tabla):
             eq = teams[row.equipo]
