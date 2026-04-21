@@ -1,6 +1,7 @@
+import secrets
 import streamlit as st
-from lib.auth import require_admin
-from lib.db import query, upsert, update
+from lib.auth import require_admin, hash_pin
+from lib.db import query, upsert, update, insert
 from lib.data import load_fixture, load_teams
 
 st.title("⚙️ Admin")
@@ -94,3 +95,31 @@ with tab_users:
         pe = len(query("picks_eliminatorias", {"user_id": user["id"]}))
         icon = "✅" if pg == 72 and pe == 32 else ("⚠️" if pg > 0 else "❌")
         st.markdown(f"{icon} **{user['nombre']}** — Grupos: {pg}/72 · Elim: {pe}/32")
+
+    st.divider()
+    col_crear, col_reset = st.columns(2)
+
+    with col_crear:
+        st.markdown("**Crear usuario**")
+        nuevo_nombre = st.text_input("Nombre", key="nuevo_nombre").strip()
+        if st.button("Crear", key="btn_crear"):
+            if not nuevo_nombre:
+                st.error("Ingresá un nombre.")
+            else:
+                try:
+                    pin = str(secrets.randbelow(9000) + 1000)
+                    insert("users", {"nombre": nuevo_nombre, "pin_hash": hash_pin(pin), "is_admin": False})
+                    st.success(f"Usuario **{nuevo_nombre}** creado.")
+                    st.code(f"{nuevo_nombre}: {pin}")
+                except Exception:
+                    st.error(f"Ya existe un usuario con el nombre '{nuevo_nombre}'.")
+
+    with col_reset:
+        st.markdown("**Resetear PIN**")
+        nombres = [u["nombre"] for u in users]
+        usuario_sel = st.selectbox("Usuario", nombres, key="reset_user")
+        if st.button("Resetear PIN", key="btn_reset"):
+            pin = str(secrets.randbelow(9000) + 1000)
+            update("users", {"nombre": usuario_sel}, {"pin_hash": hash_pin(pin)})
+            st.success(f"PIN reseteado para **{usuario_sel}**.")
+            st.code(f"{usuario_sel}: {pin}")
