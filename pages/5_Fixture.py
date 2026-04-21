@@ -2,7 +2,7 @@ import streamlit as st
 from collections import defaultdict
 from datetime import datetime, timedelta, timezone
 from lib.constants import NOMBRES_FASE, EQUIPOS_POR_GRUPO
-from lib.flags import team_label
+from lib.flags import flag_img
 from lib.data import load_fixture, load_teams
 
 st.title("📅 Fixture")
@@ -53,8 +53,8 @@ def match_card(fix, show_date=False):
     if loc_id and vis_id:
         loc_t = teams.get(loc_id)
         vis_t = teams.get(vis_id)
-        loc_str = team_label(loc_t, bold=True) if loc_t else f"<b>{loc_id}</b>"
-        vis_str = team_label(vis_t, bold=True) if vis_t else f"<b>{vis_id}</b>"
+        loc_str = f"{flag_img(loc_t)}<b>{loc_id}</b>" if loc_t else f"<b>{loc_id}</b>"
+        vis_str = f"{flag_img(vis_t)}<b>{vis_id}</b>" if vis_t else f"<b>{vis_id}</b>"
     else:
         loc_str = f"<b>{fmt_ph(fix.get('ph_local', ''))}</b>"
         vis_str = f"<b>{fmt_ph(fix.get('ph_visitante', ''))}</b>"
