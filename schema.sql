@@ -57,8 +57,24 @@ CREATE TABLE results (
     goles_visitante INT,
     ganador TEXT REFERENCES teams(id),
     finalizado BOOLEAN DEFAULT FALSE,
+    -- Tarjetas para desempate FIFA Art. 13 (fair play)
+    amarillas_local       INT DEFAULT 0,
+    amarillas_visitante   INT DEFAULT 0,
+    rojas_doble_local     INT DEFAULT 0,
+    rojas_doble_visitante INT DEFAULT 0,
+    rojas_directas_local      INT DEFAULT 0,
+    rojas_directas_visitante  INT DEFAULT 0,
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- ⚠️  Si la tabla ya existe, correr esto en el SQL Editor de Supabase:
+-- ALTER TABLE results
+--   ADD COLUMN IF NOT EXISTS amarillas_local       INT DEFAULT 0,
+--   ADD COLUMN IF NOT EXISTS amarillas_visitante   INT DEFAULT 0,
+--   ADD COLUMN IF NOT EXISTS rojas_doble_local     INT DEFAULT 0,
+--   ADD COLUMN IF NOT EXISTS rojas_doble_visitante INT DEFAULT 0,
+--   ADD COLUMN IF NOT EXISTS rojas_directas_local      INT DEFAULT 0,
+--   ADD COLUMN IF NOT EXISTS rojas_directas_visitante  INT DEFAULT 0;
 
 CREATE TABLE config (
     key TEXT PRIMARY KEY,

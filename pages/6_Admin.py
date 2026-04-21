@@ -19,6 +19,24 @@ with tab_results:
     st.subheader("Cargar resultado real de un partido")
     results_db = {r["partido_id"]: r for r in query("results")}
 
+    def partido_label(f):
+        loc_id = f.get("local")
+        vis_id = f.get("visitante")
+        if loc_id and vis_id:
+            ln = teams.get(loc_id, {}).get("nombre", loc_id)
+            vn = teams.get(vis_id, {}).get("nombre", vis_id)
+            return f"{ln} vs {vn}"
+        ph_l = f.get("ph_local", "")
+        ph_v = f.get("ph_visitante", "")
+        return f"P{f['id']} — {ph_l} vs {ph_v}" if ph_l else f"P{f['id']} — {f.get('ciudad','')}"
+
+    def tarjetas_inputs(team_id, team_nombre, sufijo, res):
+        st.caption(f"**{team_nombre}**")
+        am = st.number_input("🟨 Amarillas",      0, 20, int(res.get(f"amarillas_{sufijo}") or 0),    key=f"admin_am_{sufijo}")
+        rd = st.number_input("🟥 R. doble am.",   0, 10, int(res.get(f"rojas_doble_{sufijo}") or 0),  key=f"admin_rd_{sufijo}")
+        ri = st.number_input("🟥 R. directa",     0, 10, int(res.get(f"rojas_directas_{sufijo}") or 0), key=f"admin_ri_{sufijo}")
+        return am, rd, ri
+
     fases = ["grupos", "16vos", "8vos", "cuartos", "semi", "tercer_puesto", "final"]
     fase_sel = st.selectbox("Fase", fases)
     partidos_fase = [f for f in fixture_raw if f["fase"] == fase_sel]
@@ -26,7 +44,7 @@ with tab_results:
     if not partidos_fase:
         st.info("No hay partidos para esta fase.")
     else:
-        opciones = {f["id"]: f"P{f['id']} — {f.get('ciudad','')}" for f in partidos_fase}
+        opciones = {f["id"]: partido_label(f) for f in partidos_fase}
         pid_sel = st.selectbox("Partido", list(opciones.keys()), format_func=lambda x: opciones[x])
 
         fix = fixture[pid_sel]
@@ -35,19 +53,29 @@ with tab_results:
         if fix["fase"] == "grupos":
             loc = teams.get(fix.get("local"), {})
             vis = teams.get(fix.get("visitante"), {})
+            loc_nombre = loc.get("nombre", "Local")
+            vis_nombre = vis.get("nombre", "Visitante")
+
             c1, c2, c3 = st.columns(3)
-            gl = c1.number_input(f"Goles {loc.get('nombre','Local')}", 0, 20,
-                                 res.get("goles_local", 0), key="admin_gl")
-            c2.markdown("**-**")
-            gv = c3.number_input(f"Goles {vis.get('nombre','Visitante')}", 0, 20,
-                                 res.get("goles_visitante", 0), key="admin_gv")
+            gl = c1.number_input(f"Goles {loc_nombre}", 0, 20, int(res.get("goles_local") or 0), key="admin_gl")
+            c2.markdown("<div style='text-align:center;padding-top:28px'>—</div>", unsafe_allow_html=True)
+            gv = c3.number_input(f"Goles {vis_nombre}", 0, 20, int(res.get("goles_visitante") or 0), key="admin_gv")
             finalizado = st.checkbox("Partido finalizado", res.get("finalizado", False))
+
+            st.markdown("**Tarjetas**")
+            tc1, tc2 = st.columns(2)
+            with tc1:
+                am_l, rd_l, ri_l = tarjetas_inputs(fix.get("local"), loc_nombre, "local", res)
+            with tc2:
+                am_v, rd_v, ri_v = tarjetas_inputs(fix.get("visitante"), vis_nombre, "visitante", res)
 
             payload = {
                 "partido_id": pid_sel,
-                "goles_local": gl,
-                "goles_visitante": gv,
+                "goles_local": gl, "goles_visitante": gv,
                 "finalizado": finalizado,
+                "amarillas_local": am_l, "amarillas_visitante": am_v,
+                "rojas_doble_local": rd_l, "rojas_doble_visitante": rd_v,
+                "rojas_directas_local": ri_l, "rojas_directas_visitante": ri_v,
             }
         else:
             equipos_disponibles = list(teams.keys())
@@ -59,16 +87,25 @@ with tab_results:
                 index=idx,
             )
             c1, c2 = st.columns(2)
-            gl = c1.number_input("Goles local (opcional)", 0, 20, res.get("goles_local", 0))
-            gv = c2.number_input("Goles visitante (opcional)", 0, 20, res.get("goles_visitante", 0))
+            gl = c1.number_input("Goles local (opcional)", 0, 20, int(res.get("goles_local") or 0), key="admin_gl_e")
+            gv = c2.number_input("Goles visitante (opcional)", 0, 20, int(res.get("goles_visitante") or 0), key="admin_gv_e")
             finalizado = st.checkbox("Partido finalizado", res.get("finalizado", False))
+
+            st.markdown("**Tarjetas** (opcional, para criterio FIFA)")
+            tc1, tc2 = st.columns(2)
+            with tc1:
+                am_l, rd_l, ri_l = tarjetas_inputs(None, "Local", "local", res)
+            with tc2:
+                am_v, rd_v, ri_v = tarjetas_inputs(None, "Visitante", "visitante", res)
 
             payload = {
                 "partido_id": pid_sel,
                 "ganador": ganador,
-                "goles_local": gl,
-                "goles_visitante": gv,
+                "goles_local": gl, "goles_visitante": gv,
                 "finalizado": finalizado,
+                "amarillas_local": am_l, "amarillas_visitante": am_v,
+                "rojas_doble_local": rd_l, "rojas_doble_visitante": rd_v,
+                "rojas_directas_local": ri_l, "rojas_directas_visitante": ri_v,
             }
 
         # Confirmación de 2 pasos

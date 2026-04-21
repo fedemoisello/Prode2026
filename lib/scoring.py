@@ -7,6 +7,7 @@ from lib.constants import (
 )
 from lib.grupos import calcular_tabla, clasificados
 from lib.db import query
+from lib.data import load_ranking_fifa
 
 
 def _tendencia(gl, gv):
@@ -57,6 +58,7 @@ def calcular_puntos_usuario(user_id: int) -> dict:
     total = 0
     desglose = {"grupos_resultado": 0, "grupos_clasificados": 0, "eliminatorias": 0}
 
+    ranking_fifa = load_ranking_fifa()
     picks_g = {p["partido_id"]: p for p in query("picks_grupos", {"user_id": user_id})}
     results  = {r["partido_id"]: r for r in query("results") if r.get("finalizado")}
     fixture_g = {f["id"]: f for f in query("fixture", {"fase": "grupos"})}
@@ -86,8 +88,8 @@ def calcular_puntos_usuario(user_id: int) -> dict:
         if not all(p.get("goles_local") is not None for p in partidos_real):
             continue
 
-        p1p, p2p, _ = clasificados(calcular_tabla(equipos, partidos_pred))
-        p1r, p2r, _ = clasificados(calcular_tabla(equipos, partidos_real))
+        p1p, p2p, _ = clasificados(calcular_tabla(equipos, partidos_pred, ranking_fifa=ranking_fifa))
+        p1r, p2r, _ = clasificados(calcular_tabla(equipos, partidos_real, ranking_fifa=ranking_fifa))
 
         if p1p == p1r:
             desglose["grupos_clasificados"] += PUNTOS_CLASIFICADO_12
@@ -135,10 +137,28 @@ def _build_partidos(partido_ids, picks_or_results, fixture_g) -> list:
         if not fix:
             continue
         row = picks_or_results.get(pid)
-        partidos.append({
-            "local": fix["equipo_local"],
-            "visitante": fix["equipo_visitante"],
+        loc_id = fix.get("equipo_local")
+        vis_id = fix.get("equipo_visitante")
+        p = {
+            "local": loc_id,
+            "visitante": vis_id,
             "goles_local": row.get("goles_local") if row else None,
             "goles_visitante": row.get("goles_visitante") if row else None,
-        })
+        }
+        # Incluir tarjetas solo cuando vienen de results (tienen las columnas de cards)
+        if row and any(row.get(k) for k in ("amarillas_local", "amarillas_visitante",
+                                             "rojas_doble_local", "rojas_directas_local")):
+            p["tarjetas"] = {
+                loc_id: {
+                    "amarillas":       int(row.get("amarillas_local") or 0),
+                    "rojas_doble":     int(row.get("rojas_doble_local") or 0),
+                    "rojas_directas":  int(row.get("rojas_directas_local") or 0),
+                },
+                vis_id: {
+                    "amarillas":       int(row.get("amarillas_visitante") or 0),
+                    "rojas_doble":     int(row.get("rojas_doble_visitante") or 0),
+                    "rojas_directas":  int(row.get("rojas_directas_visitante") or 0),
+                },
+            }
+        partidos.append(p)
     return partidos
