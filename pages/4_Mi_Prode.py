@@ -22,8 +22,12 @@ st.subheader("Fase de Grupos")
 for grupo in GRUPOS:
     partido_ids = PARTIDOS_POR_GRUPO[grupo]
     equipos = EQUIPOS_POR_GRUPO[grupo]
-    with st.expander(f"Grupo {grupo}"):
+    nombres_equipos = " / ".join(teams[e]["nombre"] for e in equipos)
+    group_complete = all(pid in picks_g for pid in partido_ids)
+    title_icon = " ✅" if group_complete else ""
+    with st.expander(f"Grupo {grupo}{title_icon}  ·  {nombres_equipos}"):
         partidos = []
+        st.markdown("**Resultados**")
         for pid in partido_ids:
             fix = fixture[pid]
             pick = picks_g.get(pid, {})
@@ -42,6 +46,7 @@ for grupo in GRUPOS:
             })
         tabla = calcular_tabla(equipos, partidos, ranking_fifa=ranking_fifa)
         st.divider()
+        st.markdown("**Tabla**")
         for i, row in enumerate(tabla):
             eq = teams[row.equipo]
             clasif = "🟢" if i < 2 else ("🟡" if i == 2 else "🔴")

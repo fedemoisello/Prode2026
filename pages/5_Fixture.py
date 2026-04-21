@@ -1,7 +1,7 @@
 import streamlit as st
 from collections import defaultdict
 from datetime import datetime, timedelta, timezone
-from lib.constants import NOMBRES_FASE
+from lib.constants import NOMBRES_FASE, EQUIPOS_POR_GRUPO
 from lib.flags import team_label
 from lib.data import load_fixture, load_teams
 
@@ -121,7 +121,8 @@ with tab2:
                     key=lambda f: f["fecha"],
                 )
                 tiene_arg = any(is_arg(f) for f in partidos_grupo)
-                label = f"Grupo {grupo}{'  🔵⚪' if tiene_arg else ''}"
+                nombres_equipos = " / ".join(teams[e]["nombre"] for e in EQUIPOS_POR_GRUPO[grupo])
+                label = f"Grupo {grupo}{'  🔵⚪' if tiene_arg else ''}  ·  {nombres_equipos}"
                 with st.expander(label, expanded=tiene_arg):
                     for fix in partidos_grupo:
                         match_card(fix, show_date=True)
