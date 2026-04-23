@@ -84,6 +84,16 @@ for grupo in GRUPOS:
                 default_l = prev.get("goles_local", 0)
                 default_v = prev.get("goles_visitante", 0)
 
+                if idx % 2 == 0:
+                    jornada_num = idx // 2 + 1
+                    st.markdown(f"""<div style="
+                        background:#1A1F2E;border-radius:4px;
+                        padding:4px 10px;margin:14px 0 2px 0;
+                        font-size:0.72em;letter-spacing:0.09em;
+                        text-transform:uppercase;font-weight:600;
+                        color:rgba(255,255,255,0.45)
+                    ">Jornada {jornada_num}</div>""", unsafe_allow_html=True)
+
                 with st.container(border=(idx % 2 == 0)):
                     r1l, r1r = st.columns([3, 1])
                     r1l.markdown(f"{flag_img(loc)}**{loc['nombre']}**", unsafe_allow_html=True)
