@@ -50,9 +50,9 @@ body { font-family: 'Poppins', sans-serif !important; }
     }
 }
 
-/* ─── FLECHA DEL SIDEBAR (collapsed: aparece en el borde) ─ */
-[data-testid="collapsedControl"],
-[data-testid="collapsedControl"] button {
+/* ─── FLECHA DEL SIDEBAR (sidebar cerrado) ──────────────── */
+[data-testid="collapsedControl"] {
+    background: #27AE60 !important;
     background-color: #27AE60 !important;
     border-radius: 0 8px 8px 0 !important;
     width: 2rem !important;
@@ -62,15 +62,24 @@ body { font-family: 'Poppins', sans-serif !important; }
     justify-content: center !important;
     border: none !important;
 }
-[data-testid="collapsedControl"] svg {
+[data-testid="collapsedControl"] button,
+[data-testid="collapsedControl"] > *,
+[data-testid="collapsedControl"] span {
+    background: #27AE60 !important;
+    background-color: #27AE60 !important;
+    border: none !important;
+}
+[data-testid="collapsedControl"] svg,
+[data-testid="collapsedControl"] button svg {
     color: white !important;
     fill: white !important;
     width: 1.2rem !important;
     height: 1.2rem !important;
 }
-/* ─── FLECHA DEL SIDEBAR (expanded: botón dentro del sidebar) */
+/* ─── FLECHA DEL SIDEBAR (sidebar abierto) ───────────────── */
 [data-testid="stSidebarHeader"] button,
 [data-testid="stSidebarHeader"] [data-testid="baseButton-headerNoPadding"] {
+    background: #27AE60 !important;
     background-color: #27AE60 !important;
     border-radius: 8px !important;
     border: none !important;
