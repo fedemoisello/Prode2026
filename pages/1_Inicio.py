@@ -9,26 +9,34 @@ st.markdown("""
 @media (max-width: 768px) {
     .mobile-title  { display: block !important; }
     .desktop-title { display: none  !important; }
-    .block-container {
-        padding-top: 0.5rem !important;
-        padding-bottom: 0.5rem !important;
-    }
-    /* imagen arriba (column-reverse), form debajo superpuesto */
-    [data-testid="stHorizontalBlock"]:has(img) {
+    .block-container { padding-top: 0.5rem !important; padding-bottom: 0.5rem !important; }
+
+    /* imagen arriba (column-reverse), form superpuesto encima */
+    [data-testid="stHorizontalBlock"] {
         flex-direction: column-reverse !important;
-        gap: 0 !important;
+        overflow: visible !important;
     }
-    /* imagen: semitransparente, queda detrás */
-    [data-testid="stHorizontalBlock"]:has(img) > [data-testid="column"]:nth-child(2) {
+    /* col_right (imagen, nth-child 2): semitransparente, detrás */
+    [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2) {
         opacity: 0.25 !important;
         position: relative !important;
         z-index: 0 !important;
     }
-    /* form: sube 140px para quedar superpuesto sobre la imagen */
-    [data-testid="stHorizontalBlock"]:has(img) > [data-testid="column"]:nth-child(1) {
+    /* col_left (form, nth-child 1): sube y queda delante */
+    [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(1) {
         position: relative !important;
         z-index: 1 !important;
         margin-top: -140px !important;
+    }
+    /* RESET: bloque interno de métricas (visible solo cuando logueado) */
+    [data-testid="column"] [data-testid="stHorizontalBlock"] {
+        flex-direction: row !important;
+    }
+    [data-testid="column"] [data-testid="stHorizontalBlock"] > [data-testid="column"] {
+        opacity: 1 !important;
+        position: static !important;
+        z-index: auto !important;
+        margin-top: 0 !important;
     }
 }
 
@@ -36,25 +44,15 @@ st.markdown("""
 @media (min-width: 769px) {
     .mobile-title  { display: none  !important; }
     .desktop-title { display: block !important; }
-    /* imagen fija a 420px — sidebar abierta/cerrada ya no la redimensiona */
-    [data-testid="stHorizontalBlock"]:has(img) > [data-testid="column"]:nth-child(2) {
-        flex: 0 0 420px !important;
-        max-width: 420px !important;
-        min-width: 0 !important;
-    }
-    /* columna del form absorbe el espacio restante */
-    [data-testid="stHorizontalBlock"]:has(img) > [data-testid="column"]:nth-child(1) {
-        flex: 1 1 auto !important;
-        min-width: 0 !important;
-    }
-    [data-testid="stHorizontalBlock"]:has(img) > [data-testid="column"]:nth-child(2) img {
+    .block-container { padding-top: 1.5rem !important; padding-bottom: 1.5rem !important; }
+    /* max-width en la imagen directamente: no crece al cerrar sidebar
+       calc(40vw - 110px) ≈ ancho de col_right cuando el sidebar está abierto */
+    [data-testid="stImage"] img,
+    [data-testid="stImage"] svg {
+        max-width: calc(40vw - 110px) !important;
         max-height: min(540px, calc(100vh - 150px)) !important;
         object-fit: contain !important;
         width: 100% !important;
-    }
-    .block-container {
-        padding-top: 1.5rem !important;
-        padding-bottom: 1.5rem !important;
     }
 }
 </style>
