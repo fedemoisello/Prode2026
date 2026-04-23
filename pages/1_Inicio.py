@@ -15,18 +15,16 @@ st.markdown("""
     [data-testid="stHorizontalBlock"] {
         flex-direction: column-reverse !important;
     }
-    /* imagen al 70% del ancho, centrada */
-    [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2) {
-        max-width: 70% !important;
-        align-self: center !important;
+    /* imagen al 70% del viewport, centrada — apunta al componente directamente */
+    [data-testid="stImage"] {
+        max-width: 70vw !important;
+        width: 70vw !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
     }
     /* reset para bloque interno de métricas (cuando logueado) */
     [data-testid="column"] [data-testid="stHorizontalBlock"] {
         flex-direction: row !important;
-    }
-    [data-testid="column"] [data-testid="stHorizontalBlock"] > [data-testid="column"] {
-        max-width: unset !important;
-        align-self: auto !important;
     }
 }
 
