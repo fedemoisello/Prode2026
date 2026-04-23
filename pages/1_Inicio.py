@@ -5,21 +5,52 @@ from lib.db import query
 
 st.markdown("""
 <style>
-/* Mobile: imagen arriba, form abajo */
+/* ─── MOBILE ─────────────────────────────────────────── */
 @media (max-width: 768px) {
-    [data-testid="stHorizontalBlock"] {
-        flex-direction: column-reverse !important;
-    }
+    .mobile-title  { display: block !important; }
+    .desktop-title { display: none  !important; }
     .block-container {
         padding-top: 0.5rem !important;
         padding-bottom: 0.5rem !important;
     }
+    /* imagen arriba (column-reverse), form debajo superpuesto */
+    [data-testid="stHorizontalBlock"]:has(img) {
+        flex-direction: column-reverse !important;
+        gap: 0 !important;
+    }
+    /* imagen: semitransparente, queda detrás */
+    [data-testid="stHorizontalBlock"]:has(img) > [data-testid="column"]:nth-child(2) {
+        opacity: 0.25 !important;
+        position: relative !important;
+        z-index: 0 !important;
+    }
+    /* form: sube 140px para quedar superpuesto sobre la imagen */
+    [data-testid="stHorizontalBlock"]:has(img) > [data-testid="column"]:nth-child(1) {
+        position: relative !important;
+        z-index: 1 !important;
+        margin-top: -140px !important;
+    }
 }
-/* Desktop: limitar alto de la imagen y reducir padding del contenedor para evitar scroll */
+
+/* ─── DESKTOP ─────────────────────────────────────────── */
 @media (min-width: 769px) {
-    [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2) img {
-        max-height: min(540px, calc(100vh - 150px));
-        object-fit: contain;
+    .mobile-title  { display: none  !important; }
+    .desktop-title { display: block !important; }
+    /* imagen fija a 420px — sidebar abierta/cerrada ya no la redimensiona */
+    [data-testid="stHorizontalBlock"]:has(img) > [data-testid="column"]:nth-child(2) {
+        flex: 0 0 420px !important;
+        max-width: 420px !important;
+        min-width: 0 !important;
+    }
+    /* columna del form absorbe el espacio restante */
+    [data-testid="stHorizontalBlock"]:has(img) > [data-testid="column"]:nth-child(1) {
+        flex: 1 1 auto !important;
+        min-width: 0 !important;
+    }
+    [data-testid="stHorizontalBlock"]:has(img) > [data-testid="column"]:nth-child(2) img {
+        max-height: min(540px, calc(100vh - 150px)) !important;
+        object-fit: contain !important;
+        width: 100% !important;
     }
     .block-container {
         padding-top: 1.5rem !important;
@@ -31,13 +62,17 @@ st.markdown("""
 
 u = get_session()
 
+# Título solo visible en mobile (el de desktop vive dentro de col_left)
+st.markdown("<div class='mobile-title'><h1 style='font-size:1.6em;margin-top:0'>Prode Mundial 2026</h1></div>",
+            unsafe_allow_html=True)
+
 col_left, col_right = st.columns([3, 2], gap="large")
 
 with col_right:
     st.image("assets/logo_mundial_2026.svg", use_container_width=True)
 
 with col_left:
-    st.markdown("<h1 style='font-size:1.6em;margin-top:0'>Prode Mundial 2026</h1>",
+    st.markdown("<div class='desktop-title'><h1 style='font-size:1.6em;margin-top:0'>Prode Mundial 2026</h1></div>",
                 unsafe_allow_html=True)
     if u:
         st.success(f"Sesión activa: **{u['nombre']}**")
