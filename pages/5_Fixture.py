@@ -59,11 +59,10 @@ def match_card(fix, show_date=False, idx=0):
         loc_str = f"<b>{fmt_ph(fix.get('ph_local', ''))}</b>"
         vis_str = f"<b>{fmt_ph(fix.get('ph_visitante', ''))}</b>"
 
-    arg      = is_arg(fix)
     row_bg   = "#1A1F2E" if idx % 2 == 0 else "transparent"
-    bg       = "#5DADE2" if arg else row_bg
-    color    = "white"   if arg else "inherit"
-    badge    = " &nbsp;🔵⚪" if arg else ""
+    bg       = row_bg
+    color    = "inherit"
+    badge    = ""
 
     if show_date:
         dt_local  = dt + offset
@@ -95,7 +94,7 @@ with tab1:
         if date == today:
             st.markdown(f"### 📍 HOY — {dia_str}")
         else:
-            label = f"{'🔵⚪ ' if tiene_arg else ''}{dia_str}"
+            label = dia_str
             st.markdown(f"### {label}")
 
         for idx, fix in enumerate(partidos):
@@ -119,8 +118,8 @@ with tab2:
                 )
                 tiene_arg = any(is_arg(f) for f in partidos_grupo)
                 nombres_equipos = " / ".join(teams[e]["nombre"] for e in EQUIPOS_POR_GRUPO[grupo])
-                label = f"Grupo {grupo}{'  🔵⚪' if tiene_arg else ''}  ·  {nombres_equipos}"
-                with st.expander(label, expanded=tiene_arg):
+                label = f"Grupo {grupo}  ·  {nombres_equipos}"
+                with st.expander(label, expanded=False):
                     for idx, fix in enumerate(partidos_grupo):
                         match_card(fix, show_date=True, idx=idx)
         else:

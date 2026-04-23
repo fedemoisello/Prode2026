@@ -22,7 +22,7 @@ with st.sidebar:
         'style="vertical-align:middle;margin-right:5px">Hora Argentina',
         unsafe_allow_html=True,
     )
-    col_tog.toggle("", key="tz_bsas", label_visibility="collapsed")
+    col_tog.toggle("", key="tz_bsas", value=True, label_visibility="collapsed")
 
 pages = [
     st.Page("pages/1_Inicio.py",       title="Inicio",            icon="🏠", default=True),
