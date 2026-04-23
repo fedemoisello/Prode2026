@@ -61,13 +61,15 @@ with col_left:
                 unsafe_allow_html=True)
     if u:
         st.success(f"Sesión activa: **{u['nombre']}**")
-        if st.button("Cerrar sesión"):
-            clear_session()
-            st.rerun()
-
-        locked = is_locked()
         st.divider()
 
+        btn1, btn2 = st.columns(2)
+        if btn1.button("📅 Ver fixture", use_container_width=True):
+            st.switch_page("pages/5_Fixture.py")
+        if btn2.button("✏️ Cargar mi prode", use_container_width=True):
+            st.switch_page("pages/2_Fase_Grupos.py")
+
+        locked = is_locked()
         if not locked:
             st.metric("⏳ Tiempo para cargar", tiempo_restante())
             picks_g = query("picks_grupos", {"user_id": u["id"]})
@@ -83,6 +85,10 @@ with col_left:
                 st.success("✅ Prode completo. Podés modificarlo hasta el cierre.")
         else:
             st.info(f"🔒 Prode cerrado desde {get_deadline().strftime('%d/%m/%Y %H:%M')} UTC")
+
+        if st.button("Cerrar sesión"):
+            clear_session()
+            st.rerun()
 
     else:
         if st.session_state.pop("session_expired", False):

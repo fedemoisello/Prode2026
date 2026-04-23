@@ -41,6 +41,25 @@ st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
 body { font-family: 'Poppins', sans-serif !important; }
+
+/* ─── SIDEBAR MOBILE ──────────────────────────────────── */
+@media (max-width: 768px) {
+    section[data-testid="stSidebar"] {
+        width: 220px !important;
+        min-width: 220px !important;
+    }
+}
+
+/* ─── FLECHA DEL SIDEBAR (todos los tamaños) ─────────── */
+[data-testid="collapsedControl"] {
+    background-color: rgba(50, 98, 149, 0.7) !important;
+    border-radius: 0 8px 8px 0 !important;
+    width: 2rem !important;
+    height: 3rem !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
