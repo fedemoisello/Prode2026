@@ -11,32 +11,22 @@ st.markdown("""
     .desktop-title { display: none  !important; }
     .block-container { padding-top: 0.5rem !important; padding-bottom: 0.5rem !important; }
 
-    /* imagen arriba (column-reverse), form superpuesto encima */
+    /* imagen arriba, form abajo */
     [data-testid="stHorizontalBlock"] {
         flex-direction: column-reverse !important;
-        overflow: visible !important;
     }
-    /* col_right (imagen, nth-child 2): semitransparente, detrás */
+    /* imagen al 70% del ancho, centrada */
     [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2) {
-        opacity: 0.25 !important;
-        position: relative !important;
-        z-index: 0 !important;
+        max-width: 70% !important;
+        align-self: center !important;
     }
-    /* col_left (form, nth-child 1): sube y queda delante */
-    [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(1) {
-        position: relative !important;
-        z-index: 1 !important;
-        margin-top: -140px !important;
-    }
-    /* RESET: bloque interno de métricas (visible solo cuando logueado) */
+    /* reset para bloque interno de métricas (cuando logueado) */
     [data-testid="column"] [data-testid="stHorizontalBlock"] {
         flex-direction: row !important;
     }
     [data-testid="column"] [data-testid="stHorizontalBlock"] > [data-testid="column"] {
-        opacity: 1 !important;
-        position: static !important;
-        z-index: auto !important;
-        margin-top: 0 !important;
+        max-width: unset !important;
+        align-self: auto !important;
     }
 }
 
@@ -45,8 +35,7 @@ st.markdown("""
     .mobile-title  { display: none  !important; }
     .desktop-title { display: block !important; }
     .block-container { padding-top: 1.5rem !important; padding-bottom: 1.5rem !important; }
-    /* max-width en la imagen directamente: no crece al cerrar sidebar
-       calc(40vw - 110px) ≈ ancho de col_right cuando el sidebar está abierto */
+    /* imagen fija: no crece al cerrar sidebar */
     [data-testid="stImage"] img,
     [data-testid="stImage"] svg {
         max-width: calc(40vw - 110px) !important;
