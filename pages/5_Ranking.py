@@ -35,12 +35,28 @@ with st.spinner("Calculando puntajes..."):
 
 resultados.sort(key=lambda x: x["total"], reverse=True)
 
+rows_html = ""
 for i, r in enumerate(resultados, 1):
     medal = ["🥇", "🥈", "🥉"][i - 1] if i <= 3 else f"{i}."
-    with st.container():
-        col1, col2, col3, col4, col5 = st.columns([1, 4, 2, 2, 2])
-        col1.markdown(f"**{medal}**")
-        col2.markdown(f"**{r['nombre']}**")
-        col3.metric("Total", r["total"])
-        col4.metric("Grupos", r["grupos_resultado"] + r["grupos_clasificados"])
-        col5.metric("Elim.", r["eliminatorias"])
+    bg = "#1A1F2E" if i % 2 == 0 else "transparent"
+    grupos_pts = r["grupos_resultado"] + r["grupos_clasificados"]
+    rows_html += f"""<tr style="background:{bg}">
+        <td style="padding:8px 6px;text-align:center">{medal}</td>
+        <td style="padding:8px 6px"><b>{r['nombre']}</b></td>
+        <td style="padding:8px 6px;text-align:center">{grupos_pts}</td>
+        <td style="padding:8px 6px;text-align:center">{r['eliminatorias']}</td>
+        <td style="padding:8px 6px;text-align:center"><b>{r['total']}</b></td>
+    </tr>"""
+
+st.markdown(f"""
+<table style="width:100%;border-collapse:collapse;font-family:inherit">
+<thead><tr style="opacity:0.5;font-size:0.82em;border-bottom:1px solid #444">
+    <th style="padding:6px;text-align:center">Pos.</th>
+    <th style="padding:6px;text-align:left">Nombre</th>
+    <th style="padding:6px;text-align:center">Grupos</th>
+    <th style="padding:6px;text-align:center">Elim.</th>
+    <th style="padding:6px;text-align:center">Total</th>
+</tr></thead>
+<tbody>{rows_html}</tbody>
+</table>
+""", unsafe_allow_html=True)

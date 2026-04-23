@@ -69,7 +69,7 @@ for grupo in GRUPOS:
         with col_partidos:
             st.markdown("**Resultados**")
             nuevos_picks = {}
-            for pid in partido_ids:
+            for idx, pid in enumerate(partido_ids):
                 fix = fixture[pid]
                 loc = teams[fix["local"]]
                 vis = teams[fix["visitante"]]
@@ -84,15 +84,16 @@ for grupo in GRUPOS:
                 default_l = prev.get("goles_local", 0)
                 default_v = prev.get("goles_visitante", 0)
 
-                r1l, r1r = st.columns([3, 1])
-                r1l.markdown(f"{flag_img(loc)}**{loc['nombre']}**", unsafe_allow_html=True)
-                gl = r1r.number_input("Local", min_value=0, max_value=20, value=default_l,
-                                      key=f"g_{pid}_l", label_visibility="collapsed", disabled=locked)
-                r2l, r2r = st.columns([3, 1])
-                r2l.markdown(f"{flag_img(vis)}**{vis['nombre']}**", unsafe_allow_html=True)
-                gv = r2r.number_input("Visitante", min_value=0, max_value=20, value=default_v,
-                                      key=f"g_{pid}_v", label_visibility="collapsed", disabled=locked)
-                st.caption(f"📅 {fecha_str} · {fix['ciudad']}")
+                with st.container(border=(idx % 2 == 0)):
+                    r1l, r1r = st.columns([3, 1])
+                    r1l.markdown(f"{flag_img(loc)}**{loc['nombre']}**", unsafe_allow_html=True)
+                    gl = r1r.number_input("Local", min_value=0, max_value=20, value=default_l,
+                                          key=f"g_{pid}_l", label_visibility="collapsed", disabled=locked)
+                    r2l, r2r = st.columns([3, 1])
+                    r2l.markdown(f"{flag_img(vis)}**{vis['nombre']}**", unsafe_allow_html=True)
+                    gv = r2r.number_input("Visitante", min_value=0, max_value=20, value=default_v,
+                                          key=f"g_{pid}_v", label_visibility="collapsed", disabled=locked)
+                    st.caption(f"📅 {fecha_str} · {fix['ciudad']}")
                 nuevos_picks[pid] = {"goles_local": gl, "goles_visitante": gv}
 
         if not locked:
