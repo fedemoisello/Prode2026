@@ -1,7 +1,12 @@
 import streamlit as st
+import os, base64
 from lib.auth import login, set_session, get_session, get_all_users, clear_session
 from lib.deadline import is_locked, tiempo_restante, get_deadline
 from lib.db import query
+
+_svg_path = os.path.join(os.path.dirname(__file__), "..", "assets", "logo_mundial_2026.svg")
+with open(_svg_path, "rb") as _f:
+    _logo_b64 = base64.b64encode(_f.read()).decode()
 
 st.markdown("""
 <style>
@@ -10,36 +15,29 @@ st.markdown("""
     .mobile-title  { display: block !important; }
     .desktop-title { display: none  !important; }
     .block-container { padding-top: 0.5rem !important; padding-bottom: 0.5rem !important; }
-
-    /* imagen arriba, form abajo */
     [data-testid="stHorizontalBlock"] {
         flex-direction: column-reverse !important;
     }
-    /* imagen al 70% del viewport, centrada — apunta al componente directamente */
-    [data-testid="stImage"] {
-        max-width: 70vw !important;
-        width: 70vw !important;
-        margin-left: auto !important;
-        margin-right: auto !important;
+    .inicio-logo {
+        width: 50vw !important;
+        display: block !important;
+        margin: 0 auto !important;
     }
-    /* reset para bloque interno de métricas (cuando logueado) */
     [data-testid="column"] [data-testid="stHorizontalBlock"] {
         flex-direction: row !important;
     }
 }
-
 /* ─── DESKTOP ─────────────────────────────────────────── */
 @media (min-width: 769px) {
     .mobile-title  { display: none  !important; }
     .desktop-title { display: block !important; }
     .block-container { padding-top: 1.5rem !important; padding-bottom: 1.5rem !important; }
-    /* imagen fija: no crece al cerrar sidebar */
-    [data-testid="stImage"] img,
-    [data-testid="stImage"] svg {
-        max-width: calc(40vw - 110px) !important;
-        max-height: min(540px, calc(100vh - 150px)) !important;
-        object-fit: contain !important;
-        width: 100% !important;
+    .inicio-logo {
+        width: 100%;
+        max-width: calc(40vw - 110px);
+        max-height: min(540px, calc(100vh - 150px));
+        object-fit: contain;
+        display: block;
     }
 }
 </style>
@@ -47,14 +45,16 @@ st.markdown("""
 
 u = get_session()
 
-# Título solo visible en mobile (el de desktop vive dentro de col_left)
 st.markdown("<div class='mobile-title'><h1 style='font-size:1.6em;margin-top:0'>Prode Mundial 2026</h1></div>",
             unsafe_allow_html=True)
 
 col_left, col_right = st.columns([3, 2], gap="large")
 
 with col_right:
-    st.image("assets/logo_mundial_2026.svg", use_container_width=True)
+    st.markdown(
+        f'<img src="data:image/svg+xml;base64,{_logo_b64}" class="inicio-logo">',
+        unsafe_allow_html=True
+    )
 
 with col_left:
     st.markdown("<div class='desktop-title'><h1 style='font-size:1.6em;margin-top:0'>Prode Mundial 2026</h1></div>",
