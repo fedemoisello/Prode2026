@@ -57,57 +57,56 @@ for grupo in GRUPOS:
             })
 
         tabla = calcular_tabla(equipos, partidos_para_tabla, ranking_fifa=ranking_fifa)
-        col_tabla, col_partidos = st.columns([1, 2])
 
-        with col_tabla:
-            st.markdown("**Tabla**")
-            for i, row in enumerate(tabla):
-                eq = teams[row.equipo]
-                clasif = "🟢" if i < 2 else ("🟡" if i == 2 else "🔴")
-                st.markdown(f"{clasif} {flag_img(eq)}**{eq['nombre']}** — {row.pts}pts DG{row.dg:+d} ({row.gf}-{row.gc})", unsafe_allow_html=True)
+        st.markdown("**Resultados**")
+        nuevos_picks = {}
+        for idx, pid in enumerate(partido_ids):
+            fix = fixture[pid]
+            loc = teams[fix["local"]]
+            vis = teams[fix["visitante"]]
+            dt = datetime.fromisoformat(fix["fecha"].replace("Z", "+00:00"))
+            if tz_bsas:
+                dt_display = dt - timedelta(hours=3)
+                fecha_str = dt_display.strftime("%d/%m %H:%M") + " (BA)"
+            else:
+                fecha_str = dt.strftime("%d/%m %H:%M") + " UTC"
 
-        with col_partidos:
-            st.markdown("**Resultados**")
-            nuevos_picks = {}
-            for idx, pid in enumerate(partido_ids):
-                fix = fixture[pid]
-                loc = teams[fix["local"]]
-                vis = teams[fix["visitante"]]
-                dt = datetime.fromisoformat(fix["fecha"].replace("Z", "+00:00"))
-                if tz_bsas:
-                    dt_display = dt - timedelta(hours=3)
-                    fecha_str = dt_display.strftime("%d/%m %H:%M") + " (BA)"
-                else:
-                    fecha_str = dt.strftime("%d/%m %H:%M") + " UTC"
+            prev = picks_existentes.get(pid, {})
+            default_l = prev.get("goles_local", 0)
+            default_v = prev.get("goles_visitante", 0)
 
-                prev = picks_existentes.get(pid, {})
-                default_l = prev.get("goles_local", 0)
-                default_v = prev.get("goles_visitante", 0)
+            if idx % 2 == 0:
+                jornada_num = idx // 2 + 1
+                st.markdown(f"""<div style="
+                    background:#1A1F2E;border-radius:4px;
+                    padding:4px 10px;margin:14px 0 2px 0;
+                    font-size:0.72em;letter-spacing:0.09em;
+                    text-transform:uppercase;font-weight:600;
+                    color:rgba(255,255,255,0.45)
+                ">Jornada {jornada_num}</div>""", unsafe_allow_html=True)
 
-                if idx % 2 == 0:
-                    jornada_num = idx // 2 + 1
-                    st.markdown(f"""<div style="
-                        background:#1A1F2E;border-radius:4px;
-                        padding:4px 10px;margin:14px 0 2px 0;
-                        font-size:0.72em;letter-spacing:0.09em;
-                        text-transform:uppercase;font-weight:600;
-                        color:rgba(255,255,255,0.45)
-                    ">Jornada {jornada_num}</div>""", unsafe_allow_html=True)
+            with st.container(border=(idx % 2 == 0)):
+                r1l, r1r = st.columns([3, 1])
+                r1l.markdown(f"{flag_img(loc)}**{loc['nombre']}**", unsafe_allow_html=True)
+                gl = r1r.number_input("Local", min_value=0, max_value=20, value=default_l,
+                                      key=f"g_{pid}_l", label_visibility="collapsed", disabled=locked)
+                r2l, r2r = st.columns([3, 1])
+                r2l.markdown(f"{flag_img(vis)}**{vis['nombre']}**", unsafe_allow_html=True)
+                gv = r2r.number_input("Visitante", min_value=0, max_value=20, value=default_v,
+                                      key=f"g_{pid}_v", label_visibility="collapsed", disabled=locked)
+                st.caption(f"📅 {fecha_str} · {fix['ciudad']}")
+            nuevos_picks[pid] = {"goles_local": gl, "goles_visitante": gv}
 
-                with st.container(border=(idx % 2 == 0)):
-                    r1l, r1r = st.columns([3, 1])
-                    r1l.markdown(f"{flag_img(loc)}**{loc['nombre']}**", unsafe_allow_html=True)
-                    gl = r1r.number_input("Local", min_value=0, max_value=20, value=default_l,
-                                          key=f"g_{pid}_l", label_visibility="collapsed", disabled=locked)
-                    r2l, r2r = st.columns([3, 1])
-                    r2l.markdown(f"{flag_img(vis)}**{vis['nombre']}**", unsafe_allow_html=True)
-                    gv = r2r.number_input("Visitante", min_value=0, max_value=20, value=default_v,
-                                          key=f"g_{pid}_v", label_visibility="collapsed", disabled=locked)
-                    st.caption(f"📅 {fecha_str} · {fix['ciudad']}")
-                nuevos_picks[pid] = {"goles_local": gl, "goles_visitante": gv}
+        st.divider()
+        st.markdown("**Tabla en base a tus resultados**")
+        for i, row in enumerate(tabla):
+            eq = teams[row.equipo]
+            clasif = "🟢" if i < 2 else ("🟡" if i == 2 else "🔴")
+            st.markdown(f"{clasif} {flag_img(eq)}**{eq['nombre']}** — {row.pts}pts DG{row.dg:+d} ({row.gf}-{row.gc})", unsafe_allow_html=True)
 
         if not locked:
-            if st.button(f"💾 Guardar Grupo {grupo}", key=f"save_{grupo}"):
+            _, bcol = st.columns([3, 1])
+            if bcol.button(f"💾 Guardar Grupo {grupo}", key=f"save_{grupo}", use_container_width=True):
                 try:
                     assert_not_locked()
                     rows = [
