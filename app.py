@@ -51,14 +51,22 @@ body { font-family: 'Poppins', sans-serif !important; }
 }
 
 /* ─── FLECHA DEL SIDEBAR (todos los tamaños) ─────────── */
-[data-testid="collapsedControl"] {
-    background-color: rgba(50, 98, 149, 0.7) !important;
+[data-testid="collapsedControl"],
+[data-testid="collapsedControl"] button {
+    background-color: rgba(50, 98, 149, 0.8) !important;
     border-radius: 0 8px 8px 0 !important;
     width: 2rem !important;
     height: 3rem !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
+    border: none !important;
+}
+[data-testid="collapsedControl"] svg {
+    color: white !important;
+    fill: white !important;
+    width: 1.2rem !important;
+    height: 1.2rem !important;
 }
 </style>
 """, unsafe_allow_html=True)

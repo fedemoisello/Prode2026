@@ -43,7 +43,7 @@ def is_arg(fix):
     return fix.get("local") == "ARG" or fix.get("visitante") == "ARG"
 
 
-def match_card(fix, show_date=False):
+def match_card(fix, show_date=False, idx=0):
     loc_id = fix.get("local")
     vis_id = fix.get("visitante")
     dt     = parse_dt(fix["fecha"])
@@ -59,25 +59,22 @@ def match_card(fix, show_date=False):
         loc_str = f"<b>{fmt_ph(fix.get('ph_local', ''))}</b>"
         vis_str = f"<b>{fmt_ph(fix.get('ph_visitante', ''))}</b>"
 
-    arg   = is_arg(fix)
-    bg    = "#5DADE2" if arg else "transparent"
-    color = "white"  if arg else "inherit"
-    badge = " &nbsp;🔵⚪" if arg else ""
+    arg      = is_arg(fix)
+    row_bg   = "#1A1F2E" if idx % 2 == 0 else "transparent"
+    bg       = "#5DADE2" if arg else row_bg
+    color    = "white"   if arg else "inherit"
+    badge    = " &nbsp;🔵⚪" if arg else ""
 
     if show_date:
         dt_local  = dt + offset
-        fecha_str = f"{DIAS[dt_local.weekday()]} {dt_local.day} {MESES[dt_local.month]} · "
+        meta = f"{DIAS[dt_local.weekday()]} {dt_local.day} {MESES[dt_local.month]} · {hora} {tz_label} · {ciudad}"
     else:
-        fecha_str = ""
+        meta = f"{hora} {tz_label} · {ciudad}"
 
     st.markdown(f"""
-<div style="display:flex;justify-content:space-between;align-items:center;
-            padding:7px 10px;margin:3px 0;border-radius:5px;
-            background:{bg};color:{color}">
-  <span style="flex:1">{loc_str} &nbsp;vs&nbsp; {vis_str}{badge}</span>
-  <span style="white-space:nowrap;margin-left:12px;font-size:0.82em;opacity:0.85">
-    {fecha_str}{hora} {tz_label} · {ciudad}
-  </span>
+<div style="padding:7px 10px;margin:3px 0;border-radius:5px;background:{bg};color:{color}">
+  <div>{loc_str} &nbsp;vs&nbsp; {vis_str}{badge}</div>
+  <div style="font-size:0.78em;opacity:0.7;margin-top:3px">{meta}</div>
 </div>""", unsafe_allow_html=True)
 
 
@@ -101,8 +98,8 @@ with tab1:
             label = f"{'🔵⚪ ' if tiene_arg else ''}{dia_str}"
             st.markdown(f"### {label}")
 
-        for fix in partidos:
-            match_card(fix)
+        for idx, fix in enumerate(partidos):
+            match_card(fix, idx=idx)
 
 # ── Tab 2: por grupos y fase ───────────────────────────────────────────────────
 with tab2:
@@ -124,10 +121,10 @@ with tab2:
                 nombres_equipos = " / ".join(teams[e]["nombre"] for e in EQUIPOS_POR_GRUPO[grupo])
                 label = f"Grupo {grupo}{'  🔵⚪' if tiene_arg else ''}  ·  {nombres_equipos}"
                 with st.expander(label, expanded=tiene_arg):
-                    for fix in partidos_grupo:
-                        match_card(fix, show_date=True)
+                    for idx, fix in enumerate(partidos_grupo):
+                        match_card(fix, show_date=True, idx=idx)
         else:
-            for fix in sorted(partidos_fase, key=lambda f: f["fecha"]):
-                match_card(fix, show_date=True)
+            for idx, fix in enumerate(sorted(partidos_fase, key=lambda f: f["fecha"])):
+                match_card(fix, show_date=True, idx=idx)
 
         st.divider()
