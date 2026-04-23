@@ -50,10 +50,10 @@ body { font-family: 'Poppins', sans-serif !important; }
     }
 }
 
-/* ─── FLECHA DEL SIDEBAR (todos los tamaños) ─────────── */
+/* ─── FLECHA DEL SIDEBAR (collapsed: aparece en el borde) ─ */
 [data-testid="collapsedControl"],
 [data-testid="collapsedControl"] button {
-    background-color: rgba(50, 98, 149, 0.8) !important;
+    background-color: #27AE60 !important;
     border-radius: 0 8px 8px 0 !important;
     width: 2rem !important;
     height: 3rem !important;
@@ -67,6 +67,18 @@ body { font-family: 'Poppins', sans-serif !important; }
     fill: white !important;
     width: 1.2rem !important;
     height: 1.2rem !important;
+}
+/* ─── FLECHA DEL SIDEBAR (expanded: botón dentro del sidebar) */
+[data-testid="stSidebarHeader"] button,
+[data-testid="stSidebarHeader"] [data-testid="baseButton-headerNoPadding"] {
+    background-color: #27AE60 !important;
+    border-radius: 8px !important;
+    border: none !important;
+}
+[data-testid="stSidebarHeader"] button svg,
+[data-testid="stSidebarHeader"] [data-testid="baseButton-headerNoPadding"] svg {
+    color: white !important;
+    fill: white !important;
 }
 </style>
 """, unsafe_allow_html=True)
