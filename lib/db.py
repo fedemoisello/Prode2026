@@ -29,10 +29,10 @@ def insert(table: str, data: dict | list):
 
 def update(table: str, match: dict, data: dict):
     sb = get_client()
-    q = sb.table(table)
+    q = sb.table(table).update(data)
     for k, v in match.items():
         q = q.eq(k, v)
-    return q.update(data).execute().data
+    return q.execute().data
 
 
 def get_config(key: str) -> str:
