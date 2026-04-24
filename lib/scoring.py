@@ -43,7 +43,8 @@ def puntos_partido_eliminatoria(
         pts += PUNTOS_GOL_EQUIPO
     if pred_gv is not None and real_gv is not None and pred_gv == real_gv:
         pts += PUNTOS_GOL_EQUIPO
-    if (pred_gl is not None and pred_gv is not None
+    if (pred_ganador and pred_ganador == real_ganador
+            and pred_gl is not None and pred_gv is not None
             and real_gl is not None and real_gv is not None
             and pred_gl == real_gl and pred_gv == real_gv):
         pts += PUNTOS_RESULTADO_BONUS
