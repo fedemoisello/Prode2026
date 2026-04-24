@@ -3,6 +3,7 @@ from lib.auth import require_login
 from lib.deadline import assert_not_locked, is_locked
 from lib.db import query, upsert
 from lib.grupos import calcular_tabla, clasificados
+from lib.terceros import mejores_terceros
 from lib.constants import GRUPOS, PARTIDOS_POR_GRUPO, EQUIPOS_POR_GRUPO
 from lib.flags import flag_img, team_label
 from lib.data import load_fixture, load_teams, load_ranking_fifa
@@ -126,6 +127,61 @@ for grupo in GRUPOS:
 
 total_picks_g = len(query("picks_grupos", {"user_id": u["id"]}))
 if total_picks_g >= 72:
+    st.divider()
+    st.subheader("📊 Clasificados a las Eliminatorias")
+
+    tablas_resumen = {}
+    terceros_por_grupo_resumen = {}
+    for g in GRUPOS:
+        pids = PARTIDOS_POR_GRUPO[g]
+        equipos_g = EQUIPOS_POR_GRUPO[g]
+        partidos_g = []
+        for pid in pids:
+            fix = fixture[pid]
+            gl = st.session_state.get(f"g_{pid}_l", picks_existentes.get(pid, {}).get("goles_local"))
+            gv = st.session_state.get(f"g_{pid}_v", picks_existentes.get(pid, {}).get("goles_visitante"))
+            partidos_g.append({
+                "local": fix["local"],
+                "visitante": fix["visitante"],
+                "goles_local": gl,
+                "goles_visitante": gv,
+            })
+        tabla_g = calcular_tabla(equipos_g, partidos_g, ranking_fifa=ranking_fifa)
+        tablas_resumen[g] = tabla_g
+        terceros_por_grupo_resumen[g] = {
+            "grupo": g,
+            "equipo": tabla_g[2].equipo,
+            "pts": tabla_g[2].pts,
+            "dg": tabla_g[2].dg,
+            "gf": tabla_g[2].gf,
+            "fair_play_pts": tabla_g[2].fair_play_pts,
+        }
+
+    mejores = mejores_terceros(terceros_por_grupo_resumen, ranking_fifa)
+    mejores_ids = {t["equipo"] for t in mejores}
+
+    hcols = st.columns([0.5, 3, 3, 3.5])
+    hcols[0].markdown("**Grp**")
+    hcols[1].markdown("**🟢 1° — Clasifica**")
+    hcols[2].markdown("**🟢 2° — Clasifica**")
+    hcols[3].markdown("**3° — Mejor tercero**")
+
+    for g in GRUPOS:
+        tabla_g = tablas_resumen[g]
+        eq1 = teams[tabla_g[0].equipo]
+        eq2 = teams[tabla_g[1].equipo]
+        eq3 = teams[tabla_g[2].equipo]
+        es_mejor = tabla_g[2].equipo in mejores_ids
+
+        row = st.columns([0.5, 3, 3, 3.5])
+        row[0].markdown(f"**{g}**")
+        row[1].markdown(f"🟢 {flag_img(eq1)}{eq1['nombre']}", unsafe_allow_html=True)
+        row[2].markdown(f"🟢 {flag_img(eq2)}{eq2['nombre']}", unsafe_allow_html=True)
+        if es_mejor:
+            row[3].markdown(f"🟡 {flag_img(eq3)}{eq3['nombre']} ✅", unsafe_allow_html=True)
+        else:
+            row[3].markdown(f"🔴 {flag_img(eq3)}{eq3['nombre']} ❌", unsafe_allow_html=True)
+
     st.divider()
     if not locked:
         st.success("✅ Fase de grupos completa. ¡Ahora cargá las eliminatorias!")
