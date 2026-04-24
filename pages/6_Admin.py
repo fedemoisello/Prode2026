@@ -1,8 +1,10 @@
 import secrets
+from collections import Counter
 import streamlit as st
 from lib.auth import require_admin, hash_pin
 from lib.db import query, upsert, update, insert
 from lib.data import load_fixture, load_teams
+from lib.flags import flag_img
 
 st.title("⚙️ Admin")
 
@@ -127,11 +129,47 @@ with tab_results:
 with tab_users:
     st.subheader("Estado de prodes")
     users = query("users", columns="id,nombre,is_admin,created_at")
-    for user in users:
-        pg = len(query("picks_grupos", {"user_id": user["id"]}))
-        pe = len(query("picks_eliminatorias", {"user_id": user["id"]}))
-        icon = "✅" if pg == 72 and pe == 32 else ("⚠️" if pg > 0 else "❌")
-        st.markdown(f"{icon} **{user['nombre']}** — Grupos: {pg}/72 · Elim: {pe}/32")
+
+    all_pg = query("picks_grupos", columns="user_id")
+    all_pe = query("picks_eliminatorias", columns="user_id,partido_id,equipo_ganador")
+    pg_counts   = Counter(r["user_id"] for r in all_pg)
+    pe_counts   = Counter(r["user_id"] for r in all_pe)
+    campeon_map = {r["user_id"]: r["equipo_ganador"] for r in all_pe if r["partido_id"] == 104}
+
+    rows_html = ""
+    for i, user in enumerate(sorted(users, key=lambda x: x["nombre"])):
+        uid  = user["id"]
+        pg   = pg_counts.get(uid, 0)
+        pe   = pe_counts.get(uid, 0)
+        icon = "✅" if pg == 72 and pe == 32 else ("⚠️" if pg > 0 or pe > 0 else "❌")
+        bg   = "#1A1F2E" if i % 2 == 0 else "transparent"
+
+        camp_id = campeon_map.get(uid)
+        if camp_id and camp_id in teams:
+            camp_str = f"{flag_img(teams[camp_id])}<b>{teams[camp_id]['nombre']}</b>"
+        else:
+            camp_str = "<span style='opacity:0.35'>—</span>"
+
+        rows_html += f"""<tr style="background:{bg}">
+            <td style="padding:8px 6px;text-align:center">{icon}</td>
+            <td style="padding:8px 6px"><b>{user['nombre']}</b></td>
+            <td style="padding:8px 6px;text-align:center">{pg}/72</td>
+            <td style="padding:8px 6px;text-align:center">{pe}/32</td>
+            <td style="padding:8px 6px">{camp_str}</td>
+        </tr>"""
+
+    st.markdown(f"""
+<table style="width:100%;border-collapse:collapse;font-family:inherit">
+<thead><tr style="opacity:0.5;font-size:0.82em;border-bottom:1px solid #444">
+    <th style="padding:6px;text-align:center"></th>
+    <th style="padding:6px;text-align:left">Nombre</th>
+    <th style="padding:6px;text-align:center">Grupos</th>
+    <th style="padding:6px;text-align:center">Elim.</th>
+    <th style="padding:6px;text-align:left">Campeón</th>
+</tr></thead>
+<tbody>{rows_html}</tbody>
+</table>
+""", unsafe_allow_html=True)
 
     st.divider()
     col_crear, col_reset = st.columns(2)
